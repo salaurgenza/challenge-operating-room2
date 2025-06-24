@@ -1,0 +1,77 @@
+﻿<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Tooltip su immagine</title>
+<style>
+  .image-container {
+    position: relative;
+    display: inline-block;
+  }
+
+  .image-container img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+  }
+
+  .label-point {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background: red;
+    border-radius: 50%;
+    cursor: pointer;
+    transform: translate(-50%, -50%);
+  }
+
+  .label-point:hover .tooltip {
+    display: block;
+  }
+
+  .tooltip {
+    display: none;
+    position: absolute;
+    top: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 4px 8px;
+    background: black;
+    color: white;
+    border-radius: 4px;
+    white-space: nowrap;
+    font-size: 14px;
+    pointer-events: none;
+    user-select: none;
+  }
+</style>
+</head>
+<body>
+
+<div class="image-container">
+  <img src="/Users/stefanopepe/Desktop/Challenge/Resorces/Images/col.png" alt="Esempio immagine" />
+
+  <!-- Punto con tooltip -->
+  <div class="label-point" style="top: 35%; left: 55%;">
+    <div class="tooltip">PINZA</div>
+  </div>
+
+  <div class="label-point" style="top: 78%; left: 65%;">
+    <div class="tooltip">PINZA</div>
+  </div>
+
+    <div class="label-point" style="top: 80%; left: 32%;">
+    <div class="tooltip">TROCAR</div>
+  </div>
+
+    <div class="label-point" style="top: 90%; left: 42%;">
+    <div class="tooltip">TELECAMERA</div>
+  </div>
+    <div class="label-point" style="top: 30%; left: 28%;">
+    <div class="tooltip">FORBICE</div>
+  </div>
+</div>
+
+</body>
+</html>

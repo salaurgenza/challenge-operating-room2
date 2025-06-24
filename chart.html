@@ -1,0 +1,424 @@
+﻿<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Quiz con Anagrafica e Drag & Drop</title>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: url('file:///Users/stefanopepe/Desktop/challenge-operating-room/sala .png') no-repeat center center fixed;
+            background-size: cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .centered-container {
+            text-align: center;
+            max-width: 1000px;
+            width: 100%;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            background-color: white;
+            border-radius: 10px;
+        }
+
+        #quiz-container, #results-container {
+            display: none;
+            margin-top: 30px;
+        }
+
+        label {
+            cursor: pointer;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .question-image-options-container {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+            .question-image-options-container img {
+                max-width: 200px;
+                max-height: 150px;
+                border: 1px solid #ccc;
+            }
+
+        #dati-anagrafici p {
+            margin: 4px 0;
+        }
+
+        canvas {
+            max-width: 100%;
+            height: auto !important;
+        }
+
+        .image-container {
+            position: relative;
+            display: none;
+        }
+
+            .image-container.active {
+                display: block;
+            }
+
+            .image-container img {
+                max-width: 100%;
+                height: auto;
+            }
+
+        .drop-zone {
+            position: absolute;
+            width: 50px;
+            height: 30px;
+            background-color: rgba(255, 255, 0, 0.6);
+            border: 1px dashed #000;
+            text-align: center;
+            line-height: 30px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .label-list {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .draggable-label {
+            padding: 8px 12px;
+            background-color: #3498db;
+            color: white;
+            border-radius: 6px;
+            cursor: grab;
+            user-select: none;
+        }
+        .centered-container {
+            text-align: center;
+            max-width: 1000px;
+            width: 100%;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            background-color: rgba(255, 255, 255, 0.9); /* semitrasparente */
+            border-radius: 10px;
+        }
+        .background-image {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('file:///Users/stefanopepe/Desktop/challenge-operating-room/sala .png') no-repeat center center;
+            background-size: cover;
+            z-index: -1;
+        }
+
+        #quiz-container,
+        #results-container {
+            z-index: 2;
+        }
+
+        #anagrafica-form {
+            z-index: 2;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="centered-container">
+        <h1>Inserisci dati anagrafici per iniziare il quiz</h1>
+        <form id="anagrafica-form">
+            <label>Nome: <input type="text" id="nome" required /></label><br />
+            <label>Cognome: <input type="text" id="cognome" required /></label><br />
+            <label>Professione: <input type="text" id="professione" required /></label><br />
+            <label>Anni di servizio: <input type="number" id="anni-servizio" min="0" required /></label><br />
+            <label>Email: <input type="email" id="email" required /></label><br />
+            <button type="submit">Avvia Quiz</button>
+        </form>
+
+        <div id="quiz-container">
+            <h2 id="question-title"></h2>
+            <div id="info-box"></div>
+            <div id="question-body"></div>
+            <div>Tempo rimasto: <span id="timer">30</span> secondi</div><br />
+            <button id="submit-answer-btn">Conferma risposta</button><br /><br />
+            <div>Punteggio: <span id="score">0</span></div>
+        </div>
+
+        <div id="results-container">
+            <h2>Risultati Quiz</h2>
+            <div id="dati-anagrafici"></div>
+            <canvas id="radar-chart" width="400" height="400"></canvas>
+            <div id="results-actions" style="margin-top:20px;">
+                <button id="saveFinishBtn">Salva e Termina</button>
+                <button id="retryQuizBtn">Ritenta Quiz</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>let currentQuestion = 0;
+        let score = 0;
+        let timer;
+        let timeLeft = 30;
+        let userData = {};
+        let questionResults = [];
+
+        const questions = [
+            {
+                title: "Domanda 1/4<br><br>Indica la funzione di questo strumento",
+                type: "checkbox",
+                image: "file:///Users/stefanopepe/Desktop/challenge-operating-room/pinza-da-presa.jpg",
+                options: ["Pinza da presa", "Pinza da emostasi", "Pinza da dissezione"],
+                correctAnswers: ["Pinza da emostasi"]
+            },
+            {
+                title: "Domanda 2/4<br><br>Come si chiama questo strumento?",
+                type: "checkbox",
+                image: "file:///Users/stefanopepe/Desktop/challenge-operating-room/pinza-da-presa.jpg",
+                options: ["kocher rette", "Rochester", "Heiss rette"],
+                correctAnswers: ["Heiss rette"]
+            },
+            {
+                title: "Domanda 3/4<br><br>Trascina il nome sul punto corretto (immagine 1)",
+                type: "multiDrag",
+                image: "file:///Users/stefanopepe/Desktop/Challenge/Resorces/Images/Serv.png",
+                labels: ["PortaAghi", "Farabef"],
+                zones: [
+                    { label: "PortaAghi", top: 80, left: 200 },
+                    { label: "Farabef", top: 100, left: 50 }
+                ]
+            },
+            {
+                title: "Domanda 4/4<br><br>Trascina il nome sul punto corretto (immagine 1)",
+                type: "multiDrag",
+                image: "file:///Users/stefanopepe/Desktop/Challenge/Resorces/Images/Serv.png",
+                labels: ["PortaAghi", "Farabef"],
+                zones: [
+                    { label: "PortaAghi", top: 80, left: 200 },
+                    { label: "Farabef", top: 100, left: 50 }
+                ]
+            },
+            {
+                title: "Domanda 5/4<br><br>Trascina il nome sul punto corretto (immagine 1)",
+                type: "multiDrag",
+                image: "file:///Users/stefanopepe/Desktop/Challenge/Resorces/Images/Serv.png",
+                labels: ["PortaAghi", "Farabef"],
+                zones: [
+                    { label: "PortaAghi", top: 80, left: 200 },
+                    { label: "Farabef", top: 100, left: 50 }
+                ]
+            },
+            {
+                title: "Domanda 6/4<br><br>Trascina il nome sul punto corretto (immagine 1)",
+                type: "multiDrag",
+                image: "file:///Users/stefanopepe/Desktop/Challenge/Resorces/Images/Serv.png",
+                labels: ["PortaAghi", "Farabef"],
+                zones: [
+                    { label: "PortaAghi", top: 80, left: 200 },
+                    { label: "Farabef", top: 100, left: 50 }
+                ]
+            },
+            {
+                title: "Domanda 7/4<br><br>Trascina il nome sul punto corretto (immagine 1)",
+                type: "multiDrag",
+                image: "file:///Users/stefanopepe/Desktop/Challenge/Resorces/Images/Serv.png",
+                labels: ["PortaAghi", "Farabef"],
+                zones: [
+                    { label: "PortaAghi", top: 80, left: 200 },
+                    { label: "Farabef", top: 100, left: 50 }
+                ]
+            },
+
+            {
+                title: "Domanda 8/4<br><br>Trascina il nome sul punto corretto (immagine 2)",
+                type: "multiDrag",
+                image: "file:///Users/stefanopepe/Desktop/Challenge/Resorces/Images/cito.jpg",
+                labels: ["Valve", "Cremascoli", "Pinze da ansa"],
+                zones: [
+                    { label: "Valve", top: 490, left: 620 },
+                    { label: "Cremascoli", top: 150, left: 600 },
+                    { label: "Pinze da ansa", top: 400, left: 500 }
+                ]
+            }
+        ];
+
+        const maxTimePerQuestion = 30;
+
+        const anagraficaForm = document.getElementById('anagrafica-form');
+        const quizContainer = document.getElementById('quiz-container');
+        const resultsContainer = document.getElementById('results-container');
+        const questionTitle = document.getElementById('question-title');
+        const infoBox = document.getElementById('info-box');
+        const questionBody = document.getElementById('question-body');
+        const timerDisplay = document.getElementById('timer');
+        const scoreDisplay = document.getElementById('score');
+        const submitAnswerBtn = document.getElementById('submit-answer-btn');
+        const datiAnagraficiDiv = document.getElementById('dati-anagrafici');
+
+        anagraficaForm.addEventListener('submit', function (event) {
+            event.preventDefault();
+            userData = {
+                nome: document.getElementById('nome').value.trim(),
+                cognome: document.getElementById('cognome').value.trim(),
+                professione: document.getElementById('professione').value.trim(),
+                anniServizio: document.getElementById('anni-servizio').value.trim(),
+                email: document.getElementById('email').value.trim()
+            };
+            anagraficaForm.style.display = 'none';
+            quizContainer.style.display = 'block';
+            loadQuestion();
+            startTimer();
+        });
+
+        function loadQuestion() {
+            clearInterval(timer);
+            timeLeft = maxTimePerQuestion;
+            timerDisplay.textContent = timeLeft;
+            const q = questions[currentQuestion];
+            questionTitle.innerHTML = q.title;
+            infoBox.textContent = "Rispondi e clicca Conferma.";
+            if (q.type === "checkbox") {
+                const optionsHtml = q.options.map(opt =>
+                    `<label><input type="checkbox" name="option" value="${opt}"> ${opt}</label><br>`
+                ).join('');
+                questionBody.innerHTML = `
+              <div class="question-image-options-container">
+                <img src="${q.image}" alt="Domanda">
+                <form id="options-form">${optionsHtml}</form>
+              </div>`;
+            } else if (q.type === "multiDrag") {
+                questionBody.innerHTML = `
+              <div class="image-container active">
+                <img src="${q.image}" />
+                ${q.zones.map(z =>
+                    `<div class="drop-zone" data-label="${z.label}" style="top:${z.top}px; left:${z.left}px;">?</div>`
+                ).join('')}
+              </div>
+              <div class="label-list">
+                ${q.labels.map(l => `<div class="draggable-label" draggable="true" data-label="${l}">${l}</div>`).join('')}
+              </div>`;
+                initDragDrop();
+            }
+            submitAnswerBtn.disabled = false;
+        }
+
+        function startTimer() {
+            clearInterval(timer);
+            timer = setInterval(() => {
+                timeLeft--;
+                timerDisplay.textContent = timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    submitAnswer(true);
+                }
+            }, 1000);
+        }
+
+        function submitAnswer(fromTimeout = false) {
+            submitAnswerBtn.disabled = true;
+            clearInterval(timer);
+            const q = questions[currentQuestion];
+            let isCorrect = false;
+
+            if (q.type === "checkbox") {
+                const selected = Array.from(document.querySelectorAll('input[name="option"]:checked')).map(el => el.value);
+                isCorrect = JSON.stringify(selected.sort()) === JSON.stringify(q.correctAnswers.sort());
+            } else if (q.type === "multiDrag") {
+                isCorrect = true;
+                document.querySelectorAll('.drop-zone').forEach(zone => {
+                    const dropped = zone.textContent.trim();
+                    if (dropped !== zone.dataset.label) isCorrect = false;
+                });
+            }
+
+            questionResults.push(isCorrect);
+            if (isCorrect) {
+                score += 10;
+                scoreDisplay.textContent = score;
+                alert("Risposta corretta!");
+            } else {
+                alert(fromTimeout ? "Tempo scaduto!" : "Risposta sbagliata.");
+            }
+
+            setTimeout(() => {
+                currentQuestion++;
+                if (currentQuestion < questions.length) {
+                    loadQuestion();
+                    startTimer();
+                } else {
+                    finishQuiz();
+                }
+            }, 1000);
+        }
+
+        submitAnswerBtn.addEventListener('click', () => submitAnswer(false));
+
+        function finishQuiz() {
+            quizContainer.style.display = 'none';
+            resultsContainer.style.display = 'block';
+            datiAnagraficiDiv.innerHTML = `
+            <h3>Dati Anagrafici:</h3>
+            <p><strong>Nome:</strong> ${userData.nome}</p>
+            <p><strong>Cognome:</strong> ${userData.cognome}</p>
+            <p><strong>Professione:</strong> ${userData.professione}</p>
+            <p><strong>Anni di Servizio:</strong> ${userData.anniServizio}</p>
+            <p><strong>Email:</strong> ${userData.email}</p>
+            <h3>Punteggio: ${score} / ${questions.length * 10}</h3>
+          `;
+            const radarData = questionResults.map(r => r ? 100 : 0);
+            const ctx = document.getElementById('radar-chart').getContext('2d');
+            new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: questions.map((_, i) => `Domanda ${i + 1}`),
+                    datasets: [{
+                        label: 'Risposte corrette (%)',
+                        data: radarData,
+                        fill: true,
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderColor: 'rgb(75, 192, 192)',
+                        pointBackgroundColor: 'rgb(75, 192, 192)'
+                    }]
+                },
+                options: {
+                    scales: {
+                        r: {
+                            suggestedMin: 0,
+                            suggestedMax: 100,
+                            ticks: { stepSize: 20 }
+                        }
+                    }
+                }
+            });
+        }
+
+        document.getElementById('retryQuizBtn').addEventListener('click', () => location.reload());
+
+        function initDragDrop() {
+            const draggables = document.querySelectorAll('.draggable-label');
+            const zones = document.querySelectorAll('.drop-zone');
+
+            draggables.forEach(el => {
+                el.addEventListener('dragstart', e => e.dataTransfer.setData('text/plain', el.dataset.label));
+            });
+
+            zones.forEach(zone => {
+                zone.addEventListener('dragover', e => e.preventDefault());
+                zone.addEventListener('drop', e => {
+                    e.preventDefault();
+                    const label = e.dataTransfer.getData('text/plain');
+                    zone.textContent = label;
+                });
+            });
+        }</script>
+</body>
+</html>

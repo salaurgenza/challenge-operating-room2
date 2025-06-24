@@ -1,0 +1,100 @@
+﻿<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8" />
+    <title>Riepilogo Tutti i Risultati Quiz</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        h1, h2 {
+            color: #2c3e50;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .verde {
+            color: green;
+        }
+
+        .rosso {
+            color: red;
+        }
+
+        .utente-riga {
+            background: #ddd;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>🩺 Riepilogo Tutti gli Utenti</h1>
+    <table id="risultati">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Domanda</th>
+                <th>Tua risposta</th>
+                <th>Esito</th>
+                <th>Risposta corretta</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <script>// Leggi l'array di risultati dal localStorage
+        const datiArray = JSON.parse(localStorage.getItem("quizRisultatiArray")) || [];
+
+        const tbody = document.querySelector("#risultati tbody");
+
+        if (datiArray.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" style="color:red;">Nessun dato trovato. Fai prima il quiz.</td></tr>';
+        } else {
+            datiArray.forEach((dati, utenteIdx) => {
+                const corrette = dati.risposte.filter(r => r.correct).length;
+                const totale = dati.risposte.length;
+
+                // Riga intestazione utente
+                const trUtente = document.createElement("tr");
+                trUtente.classList.add("utente-riga");
+                trUtente.innerHTML = `<td colspan="5">
+                    Utente #${utenteIdx + 1}: ${dati.nome} ${dati.cognome} | Professione: ${dati.professione} | Anni servizio: ${dati.anniServizio} | Email: ${dati.email} | Punteggio: ${dati.punteggio} | Corrette: ${corrette} / ${totale}
+                </td>`;
+                tbody.appendChild(trUtente);
+
+                // Riga singole risposte
+                dati.risposte.forEach((r, i) => {
+                    const tr = document.createElement("tr");
+                    tr.innerHTML = `
+                        <td>${i + 1}</td>
+                        <td>${r.questionTitle || "Domanda non disponibile"}</td>
+                        <td>${r.userAnswer || "N/D"}</td>
+                        <td class="${r.correct ? 'verde' : 'rosso'}">${r.correct ? "✔️" : "❌"}</td>
+                        <td>${Array.isArray(r.correctAnswer) ? r.correctAnswer.join(", ") : r.correctAnswer}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+
+                // Riga vuota separatore
+                const trSpacer = document.createElement("tr");
+                trSpacer.innerHTML = '<td colspan="5">&nbsp;</td>';
+                tbody.appendChild(trSpacer);
+            });
+        }</script>
+</body>
+</html>

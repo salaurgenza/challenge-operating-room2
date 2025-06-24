@@ -1,0 +1,64 @@
+[debug] [2025-05-23T18:45:18.623Z] ----------------------------------------------------------------------
+[debug] [2025-05-23T18:45:18.627Z] Command:       /usr/local/bin/node /usr/local/bin/firebase deploy
+[debug] [2025-05-23T18:45:18.627Z] CLI Version:   14.4.0
+[debug] [2025-05-23T18:45:18.627Z] Platform:      darwin
+[debug] [2025-05-23T18:45:18.628Z] Node Version:  v20.12.0
+[debug] [2025-05-23T18:45:18.628Z] Time:          Fri May 23 2025 20:45:18 GMT+0200 (Ora legale dell’Europa centrale)
+[debug] [2025-05-23T18:45:18.628Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2025-05-23T18:45:18.990Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-05-23T18:45:18.990Z] > authorizing via signed-in user (ofthalmic.nurse.operation.room@gmail.com)
+[debug] [2025-05-23T18:45:18.991Z] [iam] checking project challenge-operating-room for permissions ["firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2025-05-23T18:45:18.992Z] Checked if tokens are valid: true, expires at: 1748029328714
+[debug] [2025-05-23T18:45:18.992Z] Checked if tokens are valid: true, expires at: 1748029328714
+[debug] [2025-05-23T18:45:18.994Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/challenge-operating-room:testIamPermissions [none]
+[debug] [2025-05-23T18:45:18.994Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/challenge-operating-room:testIamPermissions x-goog-quota-user=projects/challenge-operating-room
+[debug] [2025-05-23T18:45:18.994Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/challenge-operating-room:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2025-05-23T18:45:19.920Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/challenge-operating-room:testIamPermissions 200
+[debug] [2025-05-23T18:45:19.920Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/challenge-operating-room:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2025-05-23T18:45:19.921Z] Checked if tokens are valid: true, expires at: 1748029328714
+[debug] [2025-05-23T18:45:19.921Z] Checked if tokens are valid: true, expires at: 1748029328714
+[debug] [2025-05-23T18:45:19.922Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/challenge-operating-room [none]
+[debug] [2025-05-23T18:45:20.317Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/challenge-operating-room 200
+[debug] [2025-05-23T18:45:20.317Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/challenge-operating-room {"projectId":"challenge-operating-room","projectNumber":"254422148900","displayName":"Challenge-operating-room","name":"projects/challenge-operating-room","resources":{"hostingSite":"challenge-operating-room"},"state":"ACTIVE","etag":"1_729fe3b5-86b4-4d14-b0f4-335334b84027"}
+[info] 
+[info] === Deploying to 'challenge-operating-room'...
+[info] 
+[info] i  deploying hosting 
+[debug] [2025-05-23T18:45:20.328Z] Checked if tokens are valid: true, expires at: 1748029328714
+[debug] [2025-05-23T18:45:20.328Z] Checked if tokens are valid: true, expires at: 1748029328714
+[debug] [2025-05-23T18:45:20.328Z] >>> [apiv2][query] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/challenge-operating-room/versions [none]
+[debug] [2025-05-23T18:45:20.328Z] >>> [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/challenge-operating-room/versions {"status":"CREATED","labels":{"deployment-tool":"cli-firebase"}}
+[debug] [2025-05-23T18:45:22.542Z] <<< [apiv2][status] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/challenge-operating-room/versions 200
+[debug] [2025-05-23T19:00:24.414Z] ----------------------------------------------------------------------
+[debug] [2025-05-23T19:00:24.420Z] Command:       /usr/local/bin/node /usr/local/bin/firebase deploy --only hosting
+[debug] [2025-05-23T19:00:24.421Z] CLI Version:   14.4.0
+[debug] [2025-05-23T19:00:24.421Z] Platform:      darwin
+[debug] [2025-05-23T19:00:24.421Z] Node Version:  v20.12.0
+[debug] [2025-05-23T19:00:24.422Z] Time:          Fri May 23 2025 21:00:24 GMT+0200 (Ora legale dell’Europa centrale)
+[debug] [2025-05-23T19:00:24.422Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2025-05-23T19:00:24.799Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-05-23T19:00:24.800Z] > authorizing via signed-in user (ofthalmic.nurse.operation.room@gmail.com)
+[debug] [2025-05-23T19:00:24.800Z] [iam] checking project challenge-operating-room for permissions ["firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2025-05-23T19:00:24.802Z] Checked if tokens are valid: true, expires at: 1748030096542
+[debug] [2025-05-23T19:00:24.802Z] Checked if tokens are valid: true, expires at: 1748030096542
+[debug] [2025-05-23T19:00:24.804Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/challenge-operating-room:testIamPermissions [none]
+[debug] [2025-05-23T19:00:24.804Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/challenge-operating-room:testIamPermissions x-goog-quota-user=projects/challenge-operating-room
+[debug] [2025-05-23T19:00:24.804Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/challenge-operating-room:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2025-05-23T19:00:25.723Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/challenge-operating-room:testIamPermissions 200
+[debug] [2025-05-23T19:00:25.724Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/challenge-operating-room:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2025-05-23T19:00:25.725Z] Checked if tokens are valid: true, expires at: 1748030096542
+[debug] [2025-05-23T19:00:25.725Z] Checked if tokens are valid: true, expires at: 1748030096542
+[debug] [2025-05-23T19:00:25.725Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/challenge-operating-room [none]
+[debug] [2025-05-23T19:00:26.063Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/challenge-operating-room 200
+[debug] [2025-05-23T19:00:26.063Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/challenge-operating-room {"projectId":"challenge-operating-room","projectNumber":"254422148900","displayName":"Challenge-operating-room","name":"projects/challenge-operating-room","resources":{"hostingSite":"challenge-operating-room"},"state":"ACTIVE","etag":"1_729fe3b5-86b4-4d14-b0f4-335334b84027"}
+[info] 
+[info] === Deploying to 'challenge-operating-room'...
+[info] 
+[info] i  deploying hosting 
+[debug] [2025-05-23T19:00:26.069Z] Checked if tokens are valid: true, expires at: 1748030096542
+[debug] [2025-05-23T19:00:26.069Z] Checked if tokens are valid: true, expires at: 1748030096542
+[debug] [2025-05-23T19:00:26.069Z] >>> [apiv2][query] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/challenge-operating-room/versions [none]
+[debug] [2025-05-23T19:00:26.069Z] >>> [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/challenge-operating-room/versions {"status":"CREATED","labels":{"deployment-tool":"cli-firebase"}}
+[debug] [2025-05-23T19:00:27.191Z] <<< [apiv2][status] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/challenge-operating-room/versions 200
