@@ -1,0 +1,175 @@
+﻿<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <title>Strumenti Drag</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+  <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css" />
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+      background: #f9f9f9;
+    }
+
+    .image-container {
+      display: none;
+      position: relative;
+      margin-bottom: 20px;
+    }
+
+    .image-container.active {
+      display: block;
+    }
+
+    .image-container img {
+      width: 800px;
+      height: auto;
+    }
+
+    .drop-zone {
+      position: absolute;
+      width: 100px;
+      height: 30px;
+      border: 2px dashed #ccc;
+      border-radius: 5px;
+      background-color: rgba(255,255,255,0.6);
+      text-align: center;
+      line-height: 30px;
+      cursor: move;
+    }
+
+    .label-list {
+      margin-top: 20px;
+    }
+
+    .draggable-label {
+      display: inline-block;
+      padding: 10px 15px;
+      background: #fff;
+      border: 2px solid #007BFF;
+      border-radius: 5px;
+      margin: 5px;
+      cursor: move;
+      font-weight: bold;
+    }
+
+    .draggable-label.correct {
+      background-color: #c8e6c9;
+      border-color: green;
+      color: green;
+      pointer-events: none;
+    }
+
+    .check-btn {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+
+<h2>Trascina il nome sul punto corretto dell’immagine</h2>
+
+<!-- Immagine 1 -->
+<div class="image-container active" id="image1">
+  <img src="file:///Users/stefanopepe/Desktop/Challenge/Resorces/Images/Serv.png" alt="Immagine 1">
+  <div class="drop-zone" data-label="PortaAghi" style="top: 80px; left: 200px;">?</div>
+  <div class="drop-zone" data-label="Farabef" style="top: 100px; left: 50px;">?</div>
+</div>
+
+<!-- Etichette per immagine 1 -->
+<div class="label-list" id="labels1">
+  <div class="draggable-label" data-label="PortaAghi">PortaAghi</div>
+  <div class="draggable-label" data-label="Farabef">Farabef</div>
+</div>
+
+<!-- Immagine 2 -->
+<div class="image-container" id="image2">
+  <img src="file:///Users/stefanopepe/Desktop/Challenge/Resorces/Images/cito.jpg" alt="Immagine 2">
+  <div class="drop-zone" data-label="Valve" style="top: 490px; left: 620px;">?</div>
+  <div class="drop-zone" data-label="Cremascoli" style="top: 150px; left: 600px;">?</div>
+    <div class="drop-zone" data-label="Pinze da ansa" style="top: 400px; left: 280px;">?</div>
+</div>
+
+<!-- Etichette per immagine 2 -->
+<div class="label-list" id="labels2" style="display: none;">
+  <div class="draggable-label" data-label="Valve">Valve</div>
+  <div class="draggable-label" data-label="Cremascoli">Cremascoli</div>
+    <div class="draggable-label" data-label="Pinze da ansa">Pinze da ansa</div>
+</div>
+
+<button class="check-btn" onclick="checkLabels()">Conferma Posizionamento</button>
+
+<script>
+  let currentImageIndex = 0;
+  const imageContainers = $(".image-container");
+  const labelGroups = [$("#labels1"), $("#labels2")];
+
+  function initDragDrop() {
+    $(".draggable-label").draggable({
+      revert: "invalid",
+      containment: "document"
+    });
+
+    $(".drop-zone").droppable({
+      accept: function(draggable) {
+        return $(draggable).data("label") === $(this).data("label");
+      },
+      drop: function(event, ui) {
+        const $drag = ui.draggable;
+        const $drop = $(this);
+
+        $drag.addClass("correct");
+        $drag.position({
+          of: $drop,
+          my: "center",
+          at: "center"
+        });
+
+        $drag.draggable("disable");
+      }
+    });
+
+    $(".drop-zone").draggable({
+      containment: "parent",
+      stop: function(event, ui) {
+        const pos = ui.helper.position();
+        console.log(`Nuova posizione: top ${pos.top}px, left ${pos.left}px`);
+      }
+    });
+  }
+
+  function checkLabels() {
+    const activeContainer = imageContainers.eq(currentImageIndex);
+    const requiredLabels = activeContainer.find(".drop-zone").length;
+    const placedLabels = activeContainer.find(".drop-zone").filter(function () {
+      const labelText = $(this).data("label");
+      return $(".draggable-label.correct[data-label='" + labelText + "']").length > 0;
+    }).length;
+
+    if (placedLabels === requiredLabels) {
+      alert("Tutti corretti!");
+      activeContainer.removeClass("active");
+      labelGroups[currentImageIndex].hide();
+      currentImageIndex++;
+      if (currentImageIndex < imageContainers.length) {
+        imageContainers.eq(currentImageIndex).addClass("active");
+        labelGroups[currentImageIndex].show();
+      } else {
+        alert("Quiz completato!");
+      }
+    } else {
+      alert("Alcuni strumenti non sono nel punto giusto.");
+    }
+  }
+
+  $(document).ready(function () {
+    initDragDrop();
+  });
+</script>
+
+</body>
+</html>
