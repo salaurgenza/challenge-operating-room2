@@ -194,6 +194,22 @@
             <button class="login-btn" id="btn-submit-register">Registrati</button>
         </div>
     </div>
+    <!-- Area Riservata -->
+    <div style="position: absolute; top: 10px; right: 20px; z-index: 99;">
+        <button onclick="toggleLoginSidebar()" style="background-color: #2c5364; color: white; padding: 0.5em 1em; border: none; border-radius: 5px; cursor: pointer;">
+            Area Riservata
+        </button>
+    </div>
+
+    <!-- Sidebar Login -->
+    <div id="sidebarLogin" style="display:none; position: absolute; top: 50px; right: 20px; background: white; border: 1px solid #ccc; padding: 1em; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.3); z-index: 99;">
+        <input type="email" id="sidebar-email" placeholder="Email" style="display:block; width: 200px; margin-bottom: 0.5em;" />
+        <input type="password" id="sidebar-password" placeholder="Password" style="display:block; width: 200px; margin-bottom: 0.5em;" />
+        <button onclick="loginFromSidebar()" style="background-color: #2c5364; color: white; padding: 0.5em 1em; border: none; border-radius: 5px; cursor: pointer;">
+            Accedi
+        </button>
+        <p id="sidebar-msg" style="color:red; margin-top: 0.5em;"></p>
+    </div>
 
     <footer>&copy; 2025 - Healthcare Simulation</footer>
 
@@ -291,7 +307,35 @@
             } catch (error) {
                 alert("Errore registrazione: " + error.message);
             }
-        });</script>
+        })
+            // Mostra/nasconde la sidebar login
+window.toggleLoginSidebar = () => {
+    const sidebar = document.getElementById('sidebarLogin');
+    sidebar.style.display = sidebar.style.display === 'none' ? 'block' : 'none';
+};
+
+// Login dalla sidebar → reindirizza a dati.html
+window.loginFromSidebar = async () => {
+    const email = document.getElementById('sidebar-email').value.trim();
+    const password = document.getElementById('sidebar-password').value.trim();
+    const msg = document.getElementById('sidebar-msg');
+
+    msg.textContent = '';
+
+    if (!email || !password) {
+        msg.textContent = 'Inserisci email e password';
+        return;
+    }
+
+    try {
+        await signInWithEmailAndPassword(auth, email, password);
+        window.location.href = 'dati.html';
+    } catch (error) {
+        msg.textContent = "Errore: " + error.message;
+    }
+};
+
+            ;</script>
 
 </body>
 </html>
