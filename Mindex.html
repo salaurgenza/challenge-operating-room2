@@ -271,13 +271,26 @@
                 color: #e07b39; /* Colore più scuro al passaggio del mouse */
             }
 
+        html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        }
+
+        .wrapper {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        }
+
+        .wrapper > div {
+            flex: 1;
+        }
+
         footer {
-            position: absolute;
-            bottom: -20px; /* Sposta il footer 20px più in basso */
-            width: 100%;
-            background-color: #6ba98f;
-            padding: 10px 0;
-            text-align: center;
+        background-color: #6ba98f;
+        padding: 10px 0;
+        text-align: center;
         }
 
             footer.hidden {
