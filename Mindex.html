@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="it">
 <head>
     <meta charset="UTF-8" />
@@ -271,14 +271,13 @@
                 color: #e07b39; /* Colore più scuro al passaggio del mouse */
             }
 
-        
         footer {
-        position: absolute;
-        botton: -20px;
-        width:100%;
-        background-color: #6ba98f;
-        padding: 10px 0;
-        text-align: center;
+            position: absolute;
+            bottom: -20px; /* Sposta il footer 20px più in basso */
+            width: 100%;
+            background-color: #6ba98f;
+            padding: 10px 0;
+            text-align: center;
         }
 
             footer.hidden {
@@ -656,23 +655,23 @@
             <form id="anagrafica-form">
                 <div class="form-group">
                     <label for="nome">Nome</label>
-                    <input type="text" id="nome" name="nome" required />
+                    <input type="text" id="nome" name="nome" required=required />
                 </div>
                 <div class="form-group">
                     <label for="cognome">Cognome</label>
-                    <input type="text" id="cognome" name="cognome" required />
+                    <input type="text" id="cognome" name="cognome" required=required />
                 </div>
                 <div class="form-group">
                     <label for="professione">Professione</label>
-                    <input type="text" id="professione" name="professione" required />
+                    <input type="text" id="professione" name="professione" required=required />
                 </div>
                 <div class="form-group">
                     <label for="anni-servizio">Anni di Servizio</label>
-                    <input type="text" id="anni-servizio" name="anni-servizio" required />
+                    <input type="text" id="anni-servizio" name="anni-servizio" required=required />
                 </div>
                 <div class="form-group full-width">
                     <label for="email">Email</label>
-                    <input type="email" id="email" name="email" required />
+                    <input type="email" id="email" name="email" required=required />
                 </div>
                 <button type="submit">Continua</button>
             </form>
@@ -688,7 +687,7 @@
     <div id="quiz-container" class="hidden">
         <div class="top-bar">
             <div>Punti: <span id="score">0</span></div>
-            <div>Tempo rimasto: <span id="timer">120</span>s</div>
+            <div>Tempo rimasto: <span id="timer">300</span>s</div>
         </div>
         <div align="right">
             <h2 id="question-title">
@@ -759,7 +758,7 @@
         <button id="playMusicBtn">▶️ START</button>
     </div>
 
-    <audio id="backgroundAudio" src="1-efek-sound-2-220036.mp3" loop></audio>
+    <audio id="backgroundAudio" src="1-efek-sound-2-220036.mp3" loop=loop></audio>
 
     <script>const playBtn = document.getElementById("playMusicBtn");
         const audio = document.getElementById("backgroundAudio");
@@ -790,8 +789,9 @@
             clearTimeout(stopTimeout);
             alert("La musica è finita");
         });</script>
-    <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+
     <script>const firebaseConfig = {
             apiKey: "AIzaSyBsEp6DgveSe1dJUNAY0zXWjyCokcKrdyQ",
             authDomain: "challenge-operating-room.firebaseapp.com",
@@ -860,8 +860,8 @@
                 type: "multiDrag",
                 image: "serv.png",
                 dropZones: [
-                    { label: "PortaAghi", top: 40, left: 140 },
-                    { label: "Farabef", top: 60, left: 10 }
+                    { label: "PortaAghi", top: 40, left: 100 },
+                    { label: "Farabef", top: 50, left: 20 }
                 ],
                 labels: ["PortaAghi", "Farabef"],
                 correctMatches: {
@@ -874,9 +874,9 @@
                 type: "multiDrag",
                 image: "cito.jpg",
                 dropZones: [
-                    { label: "Cremascoli", top: 75, left: 350 },
+                    { label: "Cremascoli", top: 75, left: 300 },
                     { label: "Pinze da ansa", top: 200, left: 140 },
-                    { label: "Valve", top: 300, left: 390 }
+                    { label: "Valve", top: 240, left: 310 }
                 ],
                 labels: ["Cremascoli", "Valve"],
                 correctMatches: {
@@ -968,17 +968,18 @@
                 options: ["Dissezione", "Presa", "Emostasi Definitiva"],
                 correctAnswers: ["Dissezione"]
             },
+
         ];
         function showFinalSummary() {
             if (!userData) return console.error("userData non definito");
 
             const userInfo = `
-                    <strong>Nome:</strong> ${userData.nome}<br>
-                    <strong>Cognome:</strong> ${userData.cognome}<br>
-                    <strong>Professione:</strong> ${userData.professione}<br>
-                    <strong>Anni di servizio:</strong> ${userData.anniServizio}<br>
-                    <strong>Email:</strong> ${userData.email}
-                `;
+            <strong>Nome:</strong> ${userData.nome}<br>
+            <strong>Cognome:</strong> ${userData.cognome}<br>
+            <strong>Professione:</strong> ${userData.professione}<br>
+            <strong>Anni di servizio:</strong> ${userData.anniServizio}<br>
+            <strong>Email:</strong> ${userData.email}
+            `;
 
             const infoDiv = document.getElementById('user-info');
             if (infoDiv) infoDiv.innerHTML = userInfo;
@@ -1031,96 +1032,94 @@
             if (q.type === "checkbox") {
                 container.innerHTML = `
             <div class="question-image-options-container">
-                <div id="image-container"><img src="${q.image}" /></div>
-                <form id="options-form">
-                    ${q.options.map(opt => `<label><input type="checkbox" name="option" value="${opt}"> ${opt}</label><br>`).join('')}
-                </form>
+            <div id="image-container"><img src="${q.image}" /></div>
+            <form id="options-form">
+            ${q.options.map(opt => `<label><input type="checkbox" name="option" value="${opt}"> ${opt}</label><br>`).join('')}
+            </form>
             </div>`;
             } else if (q.type === "drag") {
                 container.innerHTML = `
             <div class="drag-container">
-                <div class="question-area">
-                    <img src="${q.image}" class="main-image" />
-                    <div class="drop-zone" id="drop-zone" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
-                </div>
-                <div class="options">
-                    <img src="Lama 4.png" draggable="true" ondragstart="drag(event)" id="lama1" />
-                    <img src="lama 2.png" draggable="true" ondragstart="drag(event)" id="lama2" />
-                    <img src="Lama 3.png" draggable="true" ondragstart="drag(event)" id="lama3" />
-                </div>
+            <div class="question-area">
+            <img src="${q.image}" class="main-image" />
+            <div class="drop-zone" id="drop-zone" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+            </div>
+            <div class="options">
+            <img src="Lama 4.png" draggable="true" ondragstart="drag(event)" id="lama1" />
+            <img src="lama 2.png" draggable="true" ondragstart="drag(event)" id="lama2" />
+            <img src="Lama 3.png" draggable="true" ondragstart="drag(event)" id="lama3" />
+            </div>
             </div>`;
             } else if (q.type === "drag2") {
                 container.innerHTML = `
             <div class="drag-container">
-                <div class="question-area">
-                    <img src="${q.image}" class="main-image" />
-                    <div class="drop-zone" id="drop-zone" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
-                </div>
-                <div class="options">
-                    <img src="Glaucoma.png" draggable="true" ondragstart="drag(event)" id="lama3" />
-                    <img src="Vitrectomia.png" draggable="true" ondragstart="drag(event)" id="lama2" />
-                    <img src="Faco.png" draggable="true" ondragstart="drag(event)" id="lama1" />
-                </div>
+            <div class="question-area">
+            <img src="${q.image}" class="main-image" />
+            <div class="drop-zone" id="drop-zone" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+            </div>
+            <div class="options">
+            <img src="Open.png" draggable="true" ondragstart="drag(event)" id="lama2" />
+            <img src="Label.png" draggable="true" ondragstart="drag(event)" id="lama1" />
+            </div>
             </div>`;
             } else if (q.type === "multiDrag") {
                 let imageHtml = `
-        <div class="image-wrapper" style="display: flex; justify-content: center; margin-bottom: 20px;">
-            <div style="position: relative;">
-                <img src="${q.image}" alt="Immagine" style="width: 600px; max-width: 100%;" />
-    `;
+            <div class="image-container" id="image-multi" style="position: relative; display: inline-block;">
+            <img src="${q.image}" alt="Immagine" style="width: 50%;" />
+            `;
 
                 q.dropZones.forEach(dz => {
                     imageHtml += `
             <div class="drop-zone"
-                data-label="${dz.label}"
-                ondrop="dropLabel(event)"
-                ondragover="allowDrop(event)"
-                style="position: absolute;
-                       top: ${dz.top}px;
-                       left: ${dz.left}px;
-                       width: 120px;
-                       height: 40px;
-                       border: 2px dashed #ccc;
-                       text-align: center;
-                       line-height: 40px;
-                       background-color: #f9f9f9;">
-                ?
+            data-label="${dz.label}"
+            ondrop="dropLabel(event)"
+            ondragover="allowDrop(event)"
+            style="position: absolute;
+            top: ${dz.top}px;
+            left: ${dz.left}px;
+            width: 120px;
+            height: 40px;
+            border: 2px dashed #ccc;
+            text-align: center;
+            line-height: 40px;
+            background-color: #f9f9f9;">
+            ?
             </div>`;
                 });
 
-                imageHtml += `</div></div>`; // chiude drop-zone e wrapper
+                imageHtml += `</div>`; // chiude image-container
 
-                let labelsHtml = `
-        <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 20px;">
-    `;
+                let labelsHtml = `<div class="label-list" style="margin-top: 20px;">`;
                 q.labels.forEach(label => {
                     labelsHtml += `
             <div class="draggable-label"
-                 draggable="true"
-                 ondragstart="dragLabel(event)"
-                 style="padding: 5px 10px;
-                        background-color: #d9edf7;
-                        border: 1px solid #bce8f1;
-                        border-radius: 4px;
-                        cursor: grab;">
-                ${label}
+            draggable="true"
+            ondragstart="dragLabel(event)"
+            style="display: inline-block;
+            margin: 5px;
+            padding: 5px 10px;
+            background-color: #d9edf7;
+            border: 1px solid #bce8f1;
+            border-radius: 4px;
+            cursor: grab;">
+            ${label}
             </div>`;
                 });
                 labelsHtml += `</div>`;
 
                 container.innerHTML = imageHtml + labelsHtml;
-            }
- else if (q.type === "dragVideo") {
+
+            } else if (q.type === "dragVideo") {
                 container.innerHTML = `
             <div class="video-container">
-                <video id="myVideo" controls>
-                    <source src="${q.videoSrc}" type="video/mp4" />
-                    Il tuo browser non supporta il video.
-                </video>
-                <div id="dropZone" class="drop-zone-video" ondrop="handleVideoDrop(event, '${q.correctId}')" ondragover="allowDrop(event)"></div>
+            <video id="myVideo" controls>
+            <source src="${q.videoSrc}" type="video/mp4" />
+            Il tuo browser non supporta il video.
+            </video>
+            <div id="dropZone" class="drop-zone-video" ondrop="handleVideoDrop(event, '${q.correctId}')" ondragover="allowDrop(event)"></div>
             </div>
             <div class="options video-options">
-                ${q.options.map(opt => `<img src="${opt.src}" id="${opt.id}" draggable="true" ondragstart="drag(event)" />`).join('')}
+            ${q.options.map(opt => `<img src="${opt.src}" id="${opt.id}" draggable="true" ondragstart="drag(event)" />`).join('')}
             </div>`;
 
                 const video = document.getElementById("myVideo");
@@ -1327,41 +1326,41 @@
 
             // Dati anagrafici
             document.getElementById('datiAnagraficiDiv').innerHTML = `
-                        <h3>Dati Anagrafici Inseriti:</h3>
-                        <p><strong>Nome:</strong> ${userData.nome || 'N/A'}</p>
-                        <p><strong>Cognome:</strong> ${userData.cognome || 'N/A'}</p>
-                        <p><strong>Professione:</strong> ${userData.professione || 'N/A'}</p>
-                        <p><strong>Anni di Servizio:</strong> ${userData.anniServizio || 'N/A'}</p>
-                        <p><strong>Email:</strong> ${userData.email || 'N/A'}</p>
-                    `;
+            <h3>Dati Anagrafici Inseriti:</h3>
+            <p><strong>Nome:</strong> ${userData.nome || 'N/A'}</p>
+            <p><strong>Cognome:</strong> ${userData.cognome || 'N/A'}</p>
+            <p><strong>Professione:</strong> ${userData.professione || 'N/A'}</p>
+            <p><strong>Anni di Servizio:</strong> ${userData.anniServizio || 'N/A'}</p>
+            <p><strong>Email:</strong> ${userData.email || 'N/A'}</p>
+            `;
 
             // Riepilogo sintetico
             document.getElementById('riepilogoUtenteQuiz').innerHTML = `
-                        <p>Il/La Sig. <strong>${userData.nome || ''} ${userData.cognome || ''}</strong>,
-                        con <strong>${userData.anniServizio || 'N/A'}</strong> anni di servizio,
-                        ha risposto correttamente a <strong>${correctAnswers} domande su ${totalQuestions}</strong>.</p>
-                        <hr>
-                    `;
+            <p>Il/La Sig. <strong>${userData.nome || ''} ${userData.cognome || ''}</strong>,
+            con <strong>${userData.anniServizio || 'N/A'}</strong> anni di servizio,
+            ha risposto correttamente a <strong>${correctAnswers} domande su ${totalQuestions}</strong>.</p>
+            <hr>
+            `;
 
             // Riepilogo dettagliato
             const detailedResultsHtml = `
-                        <h3>Riepilogo Quiz:</h3>
-                        <p><strong>Risposte corrette:</strong> ${correctAnswers} / ${totalQuestions}</p>
-                        <p><strong>Risposte sbagliate:</strong> ${wrongAnswers}</p>
-                        <p><strong>Punteggio totale:</strong> ${score} / ${totalQuestions * 10}</p>
-                        <p><strong>Livello competenze:</strong> ${skillLevel}</p>
-                        <hr>
-                        <h3>Dettaglio Risposte:</h3>
-                        <ul>
-                            ${questionResults.map((res, i) => `
-                                <li><strong>Domanda ${i + 1}:</strong> ${res.questionTitle} –
-                                ${res.correct ? '<span style="color:green;">Corretta</span>' : '<span style="color:red;">Sbagliata</span>'}
-                                ${res.userAnswer ? `(Tua risposta: ${res.userAnswer})` : ''}
-                                ${!res.correct && res.correctAnswer ? `(Corretta: ${Array.isArray(res.correctAnswer) ? res.correctAnswer.join(', ') : res.correctAnswer})` : ''}
-                                </li>
-                            `).join('')}
-                        </ul>
-                    `;
+            <h3>Riepilogo Quiz:</h3>
+            <p><strong>Risposte corrette:</strong> ${correctAnswers} / ${totalQuestions}</p>
+            <p><strong>Risposte sbagliate:</strong> ${wrongAnswers}</p>
+            <p><strong>Punteggio totale:</strong> ${score} / ${totalQuestions * 10}</p>
+            <p><strong>Livello competenze:</strong> ${skillLevel}</p>
+            <hr>
+            <h3>Dettaglio Risposte:</h3>
+            <ul>
+            ${questionResults.map((res, i) => `
+            <li><strong>Domanda ${i + 1}:</strong> ${res.questionTitle} –
+            ${res.correct ? '<span style="color:green;">Corretta</span>' : '<span style="color:red;">Sbagliata</span>'}
+            ${res.userAnswer ? `(Tua risposta: ${res.userAnswer})` : ''}
+            ${!res.correct && res.correctAnswer ? `(Corretta: ${Array.isArray(res.correctAnswer) ? res.correctAnswer.join(', ') : res.correctAnswer})` : ''}
+            </li>
+            `).join('')}
+            </ul>
+            `;
             document.getElementById('results-details').innerHTML = detailedResultsHtml;
 
             // Radar chart finale
@@ -1408,17 +1407,17 @@
             const totalQuestionsCount = questions.length;
 
             datiAnagraficiDiv.innerHTML = `
-                        <h3>Dati Anagrafici Inseriti:</h3>
-                        <p><strong>Nome:</strong> ${userData.nome || 'N/A'}</p>
-                        <p><strong>Cognome:</strong> ${userData.cognome || 'N/A'}</p>
-                        <p><strong>Professione:</strong> ${userData.professione || 'N/A'}</p>
-                        <p><strong>Anni di Servizio:</strong> ${userData.anniServizio || 'N/A'}</p>
-                        <p><strong>Email:</strong> ${userData.email || 'N/A'}</p>
-                        <hr>
-                        <p>Il/La Sig. <strong>${userData.nome || ''} ${userData.cognome || ''}</strong>
-                        ha risposto correttamente a <strong>${correctAnswersCount} domande su ${totalQuestionsCount}</strong>.</p>
-                        <p>Punteggio totale: <strong>${score} / ${questions.length * 10}</strong></p>
-                    `;
+            <h3>Dati Anagrafici Inseriti:</h3>
+            <p><strong>Nome:</strong> ${userData.nome || 'N/A'}</p>
+            <p><strong>Cognome:</strong> ${userData.cognome || 'N/A'}</p>
+            <p><strong>Professione:</strong> ${userData.professione || 'N/A'}</p>
+            <p><strong>Anni di Servizio:</strong> ${userData.anniServizio || 'N/A'}</p>
+            <p><strong>Email:</strong> ${userData.email || 'N/A'}</p>
+            <hr>
+            <p>Il/La Sig. <strong>${userData.nome || ''} ${userData.cognome || ''}</strong>
+            ha risposto correttamente a <strong>${correctAnswersCount} domande su ${totalQuestionsCount}</strong>.</p>
+            <p>Punteggio totale: <strong>${score} / ${questions.length * 10}</strong></p>
+            `;
 
             // Radar 1: correttezza per domanda
             const radarData = questionResults.map(q => q.correct ? 100 : 0);
@@ -1537,35 +1536,20 @@
             const datiDaInviare = {
                 ...userData,
                 punteggio: score,
-                risposte: questionResults
+                risposte: questionResults,
+                timestamp: new Date().toISOString()
             };
 
-            // Recupera array esistente o crea uno nuovo
-            let risultatiPrecedenti = JSON.parse(localStorage.getItem("quizRisultatiArray")) || [];
-
-            // Aggiungi i nuovi dati
-            risultatiPrecedenti.push(datiDaInviare);
-
-            // Salva l'array aggiornato
-            localStorage.setItem("quizRisultatiArray", JSON.stringify(risultatiPrecedenti));
-
-            fetch('http://localhost:5000/salva', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(datiDaInviare)
-            })
-                .then(res => res.text())
-                .then(msg => {
-                    alert(msg);
-
-                    window.location.href = 'dati.html';
+            db.collection("risultatiQuiz").add(datiDaInviare)
+                .then(() => {
+                    alert("✅ Risultati salvati con successo su Firebase!");
+                    window.location.href = 'dati.html'; // se hai una pagina dati.html statica
                 })
-                .catch(err => {
-                    console.error('Errore salvataggio:', err);
-                    alert('ok');
+                .catch((error) => {
+                    console.error("Errore salvataggio Firebase:", error);
+                    alert("❌ Errore nel salvataggio dei risultati.");
                 });
-        }
-</Script>
+        }</Script>
     <script>const userData = {
             nome: "Mario",
             cognome: "Rossi",
@@ -1582,26 +1566,26 @@
             correctAnswer: "Risposta Corretta"
         }));
         document.getElementById('datiAnagraficiDiv').innerHTML = `
-                    <p><strong>Nome:</strong> ${userData.nome}</p>
-                    <p><strong>Cognome:</strong> ${userData.cognome}</p>
-                    <p><strong>Professione:</strong> ${userData.professione}</p>
-                    <p><strong>Anni di Servizio:</strong> ${userData.anniServizio}</p>
-                    <p><strong>Email:</strong> ${userData.email}</p>
-                `;
+                        <p><strong>Nome:</strong> ${userData.nome}</p>
+                        <p><strong>Cognome:</strong> ${userData.cognome}</p>
+                        <p><strong>Professione:</strong> ${userData.professione}</p>
+                        <p><strong>Anni di Servizio:</strong> ${userData.anniServizio}</p>
+                        <p><strong>Email:</strong> ${userData.email}</p>
+                    `;
         document.getElementById('riepilogoUtenteQuiz').innerHTML = `
-                    <p>Hai risposto correttamente a <strong>${score / 10} domande su ${questions.length}</strong>.</p>
-                    <p>Punteggio totale: <strong>${score} / ${questions.length * 10}</strong></p>
-                `;
+                        <p>Hai risposto correttamente a <strong>${score / 10} domande su ${questions.length}</strong>.</p>
+                        <p>Punteggio totale: <strong>${score} / ${questions.length * 10}</strong></p>
+                    `;
         document.getElementById('results-details').innerHTML = `
-                    <ul>
-                        ${questionResults.map((res, i) => `
-                            <li><strong>Domanda ${i + 1}:</strong> ${res.questionTitle} –
-                            ${res.correct ? '<span style="color:green;">Corretta</span>' : '<span style="color:red;">Sbagliata</span>'}
-                            ${res.userAnswer ? `(Tua risposta: ${res.userAnswer})` : ''}
-                            ${!res.correct && res.correctAnswer ? `(Corretta: ${res.correctAnswer})` : ''}</li>
-                        `).join('')}
-                    </ul>
-                `;
+                        <ul>
+                            ${questionResults.map((res, i) => `
+                                <li><strong>Domanda ${i + 1}:</strong> ${res.questionTitle} –
+                                ${res.correct ? '<span style="color:green;">Corretta</span>' : '<span style="color:red;">Sbagliata</span>'}
+                                ${res.userAnswer ? `(Tua risposta: ${res.userAnswer})` : ''}
+                                ${!res.correct && res.correctAnswer ? `(Corretta: ${res.correctAnswer})` : ''}</li>
+                            `).join('')}
+                        </ul>
+                    `;
         new Chart(document.getElementById('radar-chart').getContext('2d'), {
             type: 'radar',
             data: {
