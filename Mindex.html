@@ -1065,7 +1065,7 @@
             </div>`;
             } else if (q.type === "multiDrag") {
                 let imageHtml = `
-            <div class="image-container" id="image-multi" style="position: relative; display: inline-block;">
+            <div class="image-container" id="image-multi" style="position: relative;  display: flex;  justify-content: center;  align-items: center;  margin: 0 auto;  max-width: 100%;">
             <img src="${q.image}" alt="Immagine" style="width: 50%;" />
             `;
 
@@ -1076,14 +1076,18 @@
             ondrop="dropLabel(event)"
             ondragover="allowDrop(event)"
             style="position: absolute;
-            top: ${dz.top}px;
-            left: ${dz.left}px;
-            width: 120px;
-            height: 40px;
-            border: 2px dashed #ccc;
-            text-align: center;
-            line-height: 40px;
-            background-color: #f9f9f9;">
+top: ${dz.top}px;
+left: ${dz.left}px;
+width: 130px;
+height: 40px;
+border: 2px dashed #6ba98f;
+text-align: center;
+line-height: 40px;
+background-color: #ffffffdd;
+color: #333;
+border-radius: 8px;
+font-weight: bold;
+box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
             ?
             </div>`;
                 });
