@@ -1548,13 +1548,21 @@ box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
             db.collection("risultatiQuiz").add(datiDaInviare)
                 .then(() => {
                     alert("✅ Risultati salvati con successo su Firebase!");
-                    window.location.href = 'dati.html'; // se hai una pagina dati.html statica
+
+                    // 👇 Salvataggio locale per dati.html
+                    let arrayEsistente = JSON.parse(localStorage.getItem("quizRisultatiArray")) || [];
+                    arrayEsistente.push(datiDaInviare);
+                    localStorage.setItem("quizRisultatiArray", JSON.stringify(arrayEsistente));
+
+                    // Vai a dati.html
+                    window.location.href = 'dati.html';
                 })
                 .catch((error) => {
                     console.error("Errore salvataggio Firebase:", error);
                     alert("❌ Errore nel salvataggio dei risultati.");
                 });
-        }</Script>
+        }
+</Script>
     <script>const userData = {
             nome: "Mario",
             cognome: "Rossi",
