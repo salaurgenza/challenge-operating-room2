@@ -870,19 +870,16 @@
                 }
             },
             {
-                title: "Domanda 8/8 <br><br><br> Trascina il nome sul punto corretto dell’immagine",
-                type: "multiDrag",
-                image: "cito.jpg",
-                dropZones: [
-                    { label: "Cremascoli", top: 75, left: 500 },
-                    { label: "Pinze da ansa", top: 200, left: 300 },
-                    { label: "Valve", top: 270, left: 500 }
-                ],
-                labels: ["Cremascoli", "Valve"],
-                correctMatches: {
-                    "Cremascoli": "Cremascoli",
-                    "Valve": "Valve"
-                }
+                title: "Domanda 8/8 <br><br><br> Trascina lo strumento corretto nel video per continuare",
+                type: "dragVideo",
+                videoSrc: "fistola.mp4",
+                pauseTime: 5.5,
+                correctId: "correctTool",
+                options: [
+                    { src: "Pinza di Klemmer.png", id: "wrong1" },
+                    { src: "Pinza atraumatica.png", id: "wrong2" },
+                    { src: "pinze-da-presa21.png", id: "correctTool" }
+                ]
             },
             /*
             {
