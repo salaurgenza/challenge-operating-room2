@@ -271,28 +271,14 @@
                 color: #e07b39; /* Colore più scuro al passaggio del mouse */
             }
 
-        html, body {
-            height: 100%;
-            margin: 0;
-            padding: 0;
-        }
-
-        .wrapper {
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-
-            .wrapper > div {
-                flex: 1;
-            }
-
         footer {
+            position: absolute;
+            bottom: -20px; /* Sposta il footer 20px più in basso */
+            width: 100%;
             background-color: #6ba98f;
             padding: 10px 0;
             text-align: center;
         }
-
 
             footer.hidden {
                 display: none;
@@ -803,8 +789,9 @@
             clearTimeout(stopTimeout);
             alert("La musica è finita");
         });</script>
-    <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+
     <script>const firebaseConfig = {
             apiKey: "AIzaSyBsEp6DgveSe1dJUNAY0zXWjyCokcKrdyQ",
             authDomain: "challenge-operating-room.firebaseapp.com",
@@ -819,752 +806,748 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();</script>
     <!-- Script principale -->
-    <Script>
-        let currentQuestion = 0;
+    <Script>let currentQuestion = 0;
         let score = 0;
         let timer;
-        let timeLeft = 120;
+        let timeLeft = 120000;
         let userData = {};
         let questionResults = []; // Array per salvare i risultati di ogni domanda
 
         const questions = [
-        {
-        title: "Domanda 1/20 <br><br><br> Indica la funzione di questo strumento",
-        type: "checkbox",
-        image: "pinza-da-presa.jpg",
-        options: ["Pinza da presa", "Pinza da emostasi", "Pinza da dissezione"],
-        correctAnswers: ["Pinza da emostasi"]
-        },
-        {
-        title: "Domanda 2/20 <br><br><br> Riconosci questo questo strumento? Si tratta di:",
-        type: "checkbox",
-        image: "Port.png",
-        options: ["Pinza Passafili", "Pinza da Emostasi", "Portaghi da Sutura"],
-        correctAnswers: ["Portaghi da Sutura"]
-        },
-        {
-        title: "Domanda 3/20 <br><br><br> Quale lama può montare questo manico da Bisturi n°4?",
-        type: "drag",
-        image: "Manico2.png",
-        correctId: "lama3"
-        },
-        {
-        title: "Domanda 4/20 <br><br><br> Qual è il nome di questo strumento?",
-        type: "checkbox",
-        image: "Manico.png",
-        options: ["Manico da bisturi", "Lama Fredda", "Bisturi per Incisione"],
-        correctAnswers: ["Manico da bisturi"]
-        },
-        {
-        title: "Domanda 5/20 <br><br><br> Lo strumentario in foto a quale approccio chirurgico corrisponde???",
-        type: "checkbox",
-        image: "Label.png",
-        options: ["Laparoscopia", "Chirurgia Open"],
-        correctAnswers: ["Laparoscopia"]
-        },
-        {
-        title: "Domanda 6/20 <br><br><br> Lo strumentario in foto a quale approccio chirurgico corrisponde???",
-        type: "checkbox",
-        image: "Open.png",
-        options: ["Laparoscopia", "Chirurgia Open"],
-        correctAnswers: ["Chirurgia Open"]
-        },
-        {
-        title: "Domanda 7/20 <br><br><br> Trascina il nome: PortaAghi e Farabef sull’immagine",
-        type: "multiDrag",
-        image: "serv.png",
-        dropZones: [
-        { label: "PortaAghi", top: 40, left: 100 },
-        { label: "Farabef", top: 50, left: 20 }
-        ],
-        labels: ["PortaAghi", "Farabef"],
-        correctMatches: {
-        "PortaAghi": "PortaAghi",
-        "Farabef": "Farabef"
-        }
-        },
-        {
-        title: "Domanda 8/20 <br><br><br> Trascina il nome sul punto corretto dell’immagine",
-        type: "multiDrag",
-        image: "cito.jpg",
-        dropZones: [
-        { label: "Cremascoli", top: 75, left: 300 },
-        { label: "Pinze da ansa", top: 200, left: 140 },
-        { label: "Valve", top: 240, left: 310 }
-        ],
-        labels: ["Cremascoli", "Valve"],
-        correctMatches: {
-        "Cremascoli": "Cremascoli",
-        "Valve": "Valve"
-        }
-        },
-        {
-        title: "Domanda 9/20 <br><br><br> Come si chiama questo strumento?",
-        type: "checkbox",
-        image: "Monopolare.png",
-        options: ["Pinze da Coagulo", "Pinze Atraumatiche", "Pinze Vasculari"],
-        correctAnswers: ["Pinze da Coagulo"]
-        },
-        {
-        title: "Domanda 10/20 <br><br><br> Come si chiama questo strumento?",
-        type: "checkbox",
-        image: "Pinza atraumatica.png",
-        options: ["Pinze Chirurgiche", "Pinze Atraumatiche", "Pinze Anatomiche"],
-        correctAnswers: ["Pinze Atraumatiche"]
-        },
-        {
-        title: "Domanda 11/20 <br><br><br> Come si chiama questo strumento?",
-        type: "checkbox",
-        image: "pinze-da-presa2.png",
-        options: ["kocher rette", "Rochester", "Babcock"],
-        correctAnswers: ["Babcock"]
-        },
-        {
-        title: "Domanda 12/20 <br><br><br> Indica la Funzione di questo strumento?",
-        type: "checkbox",
-        image: "Emostasi.png",
-        options: ["Pinze Dissezione", "Pinze Presa", "Pinze Emostasi"],
-        correctAnswers: ["Pinze Emostasi"]
-        },
-        {
-        title: "Domanda 13/20 <br><br><br> La pinza di Rochester è classificata come:?",
-        type: "checkbox",
-        image: "Roche.png",
-        options: ["Pinza da Dissezione", "Pinza da Presa", "Pinza da Emostasi"],
-        correctAnswers: ["Pinza da Emostasi"]
-        },
-        {
-        title: "Domanda 14/20 <br><br><br> Come si chiama questo strumento?",
-        type: "checkbox",
-        image: "Adson.png",
-        options: ["kocher rette", "Hoskin", "Adson"],
-        correctAnswers: ["Adson"]
-        },
-        {
-        title: "Domanda 15/20 <br><br><br> Indica la funzione di questo strumento?",
-        type: "checkbox",
-        image: "Emo_Temp.png",
-        options: ["Pinza da Emostasi temporanea", "Pinza da Emostasi Definitiva", "Pinza d Dissezione"],
-        correctAnswers: ["Pinza da Emostasi temporanea"]
-        },
-        {
-        title: "Domanda 16/20 <br><br><br> Come si chiama questo strumento?",
-        type: "checkbox",
-        image: "Pinza Foerster.png",
-        options: ["Pinza Foerster", "Rochester", "Heiss rette"],
-        correctAnswers: ["Pinza Foerster"]
-        },
-        {
-        title: "Domanda 17/20 <br><br><br> Come si chiama questo strumento?",
-        type: "checkbox",
-        image: "mathieu divaricatore.png",
-        options: ["kocher rette", "mathieu", "Heiss rette"],
-        correctAnswers: ["mathieu"]
-        },
-        {
-        title: "Domanda 18/20 <br><br><br> La Capsula grande è di ausilio per contenere?",
-        type: "checkbox",
-        image: "Caps_GR.png",
-        options: ["Fisiologica Per piccoli Lavaggi sul Campo operatorio", "Gli Emostatici", "Le garze di piccole dimensioni"],
-        correctAnswers: ["Fisiologica Per piccoli Lavaggi sul Campo operatorio"]
-        },
-        {
-        title: "Domanda 19/20 <br><br><br> Come si chiama questo strumento?",
-        type: "checkbox",
-        image: "Mayo.png",
-        options: ["Forbici di Mayo", "Forbici di Potts", "Metzembaum corte"],
-        correctAnswers: ["Forbici di Mayo"]
-        },
-        {
-        title: "Domanda 20/20 <br><br><br> Indica la funzione di questo strumento?",
-        type: "checkbox",
-        image: "Presa.png",
-        options: ["Dissezione", "Presa", "Emostasi Definitiva"],
-        correctAnswers: ["Dissezione"]
-        },
+            {
+                title: "Domanda 1/20 <br><br><br> Indica la funzione di questo strumento",
+                type: "checkbox",
+                image: "pinza-da-presa.jpg",
+                options: ["Pinza da presa", "Pinza da emostasi", "Pinza da dissezione"],
+                correctAnswers: ["Pinza da emostasi"]
+            },
+            {
+                title: "Domanda 2/20 <br><br><br> Riconosci questo questo strumento? Si tratta di:",
+                type: "checkbox",
+                image: "Port.png",
+                options: ["Pinza Passafili", "Pinza da Emostasi", "Portaghi da Sutura"],
+                correctAnswers: ["Portaghi da Sutura"]
+            },
+            {
+                title: "Domanda 3/20 <br><br><br> Quale lama può montare questo manico da Bisturi n°4?",
+                type: "drag",
+                image: "Manico2.png",
+                correctId: "lama3"
+            },
+            {
+                title: "Domanda 4/20 <br><br><br> Qual è il nome di questo strumento?",
+                type: "checkbox",
+                image: "Manico.png",
+                options: ["Manico da bisturi", "Lama Fredda", "Bisturi per Incisione"],
+                correctAnswers: ["Manico da bisturi"]
+            },
+            {
+                title: "Domanda 5/20 <br><br><br> Lo strumentario in foto a quale approccio chirurgico corrisponde: LAPAROSCOPICO O ROBOTICO???",
+                type: "checkbox",
+                image: "Label.png",
+                options: ["Laparoscopia", "Chirurgia Open"],
+                correctAnswers: ["Laparoscopia"]
+            },
+            {
+                title: "Domanda 6/20 <br><br><br> Di cosa si tratta???",
+                type: "checkbox",
+                image: "LACCIO.png",
+                options: ["Laccio Montato", "Punto di Sutura", "Laccio Libero"],
+                correctAnswers: ["Laccio Montato"]
+            },
+            {
+                title: "Domanda 7/20 <br><br><br> Trascina il nome: PortaAghi e Farabef sull’immagine",
+                type: "multiDrag",
+                image: "serv.png",
+                dropZones: [
+                    { label: "PortaAghi", top: 20, left: 300 },
+                    { label: "Farabef", top: 80, left: 250 }
+                ],
+                labels: ["PortaAghi", "Farabef"],
+                correctMatches: {
+                    "PortaAghi": "PortaAghi",
+                    "Farabef": "Farabef"
+                }
+            },
+            
+            {
+                title: "Domanda 9/20 <br><br><br> Come si chiama questo strumento?",
+                type: "checkbox",
+                image: "Monopolare.png",
+                options: ["Pinze da Coagulo", "Pinze Atraumatiche", "Pinze Vasculari"],
+                correctAnswers: ["Pinze da Coagulo"]
+            },
+            {
+                title: "Domanda 10/20 <br><br><br> Come si chiama questo strumento?",
+                type: "checkbox",
+                image: "Pinza atraumatica.png",
+                options: ["Pinze Chirurgiche", "Pinze Atraumatiche", "Pinze Anatomiche"],
+                correctAnswers: ["Pinze Atraumatiche"]
+            },
+            {
+                title: "Domanda 11/20 <br><br><br> Come si chiama questo strumento?",
+                type: "checkbox",
+                image: "pinze-da-presa2.png",
+                options: ["kocher rette", "Rochester", "Babcock"],
+                correctAnswers: ["Babcock"]
+            },
+            {
+                title: "Domanda 12/20 <br><br><br> Indica la Funzione di questo strumento?",
+                type: "checkbox",
+                image: "Emostasi.png",
+                options: ["Pinze Dissezione", "Pinze Presa", "Pinze Emostasi"],
+                correctAnswers: ["Pinze Emostasi"]
+            },
+            {
+                title: "Domanda 13/20 <br><br><br> La pinza di Rochester è classificata come:?",
+                type: "checkbox",
+                image: "ROCHESTER.png",
+                options: ["Pinza da Dissezione", "Pinza da Presa", "Pinza da Emostasi"],
+                correctAnswers: ["Pinza da Emostasi"]
+            },
+            {
+                title: "Domanda 14/20 <br><br><br> Come si chiama questo strumento?",
+                type: "checkbox",
+                image: "Adson.png",
+                options: ["kocher rette", "Hoskin", "Adson"],
+                correctAnswers: ["Adson"]
+            },
+            {
+                title: "Domanda 15/20 <br><br><br> Indica la funzione di questo strumento?",
+                type: "checkbox",
+                image: "Emo Temp.png",
+                options: ["Pinza da Emostasi temporanea", "Pinza da Emostasi Definitiva", "Pinza d Dissezione"],
+                correctAnswers: ["Pinza da Emostasi temporanea"]
+            },
+            {
+                title: "Domanda 16/20 <br><br><br> Come si chiama questo strumento?",
+                type: "checkbox",
+                image: "DUVALL.png",
+                options: ["Pinza Duvall", "Pinza di Allis", "Pinza di Babcok"],
+                correctAnswers: ["Pinza Duvall"]
+            },
+            {
+                title: "Domanda 17/20 <br><br><br> Come si chiama questo strumento?",
+                type: "checkbox",
+                image: "mathieu divaricatore.png",
+                options: ["kocher rette", "mathieu", "Heiss rette"],
+                correctAnswers: ["mathieu"]
+            },
+            {
+                title: "Domanda 18/20 <br><br><br> La Capsula grande è di ausilio per contenere?",
+                type: "checkbox",
+                image: "Caps Gr.png",
+                options: ["Fisiologica Per piccoli Lavaggi sul Campo operatorio", "Gli Emostatici", "Le garze di piccole dimensioni"],
+                correctAnswers: ["Fisiologica Per piccoli Lavaggi sul Campo operatorio"]
+            },
+            {
+                title: "Domanda 19/20 <br><br><br> Come si chiama questo strumento?",
+                type: "checkbox",
+                image: "Mayo.png",
+                options: ["Forbici di Mayo", "Forbici di Potts", "Metzembaum corte"],
+                correctAnswers: ["Forbici di Mayo"]
+            },
+            {
+                title: "Domanda 20/20 <br><br><br> Indica la funzione di questo strumento?",
+                type: "checkbox",
+                image: "Presa.png",
+                options: ["Dissezione", "Presa", "Emostasi Definitiva"],
+                correctAnswers: ["Dissezione"]
+            },
 
         ];
         function showFinalSummary() {
-        if (!userData) return console.error("userData non definito");
+            if (!userData) return console.error("userData non definito");
 
-        const userInfo = `
-        <strong>Nome:</strong> ${userData.nome}<br>
-        <strong>Cognome:</strong> ${userData.cognome}<br>
-        <strong>Professione:</strong> ${userData.professione}<br>
-        <strong>Anni di servizio:</strong> ${userData.anniServizio}<br>
-        <strong>Email:</strong> ${userData.email}
-        `;
+            const userInfo = `
+            <strong>Nome:</strong> ${userData.nome}<br>
+            <strong>Cognome:</strong> ${userData.cognome}<br>
+            <strong>Professione:</strong> ${userData.professione}<br>
+            <strong>Anni di servizio:</strong> ${userData.anniServizio}<br>
+            <strong>Email:</strong> ${userData.email}
+            `;
 
-        const infoDiv = document.getElementById('user-info');
-        if (infoDiv) infoDiv.innerHTML = userInfo;
+            const infoDiv = document.getElementById('user-info');
+            if (infoDiv) infoDiv.innerHTML = userInfo;
 
-        document.getElementById("quiz-container")?.classList.add("hidden");
-        document.getElementById("final-summary")?.classList.remove("hidden");
+            document.getElementById("quiz-container")?.classList.add("hidden");
+            document.getElementById("final-summary")?.classList.remove("hidden");
 
-        showRadarChart();
+            showRadarChart();
         }
 
         function startChallenge() {
-        document.getElementById("intro-container").classList.remove("show");
-        document.getElementById("intro-container").classList.add("hidden"); // Nasconde l'introduzione
+            document.getElementById("intro-container").classList.remove("show");
+            document.getElementById("intro-container").classList.add("hidden"); // Nasconde l'introduzione
 
-        document.getElementById("anagrafica-modal").classList.remove("hidden");
-        document.getElementById("anagrafica-modal").classList.add("show"); // Mostra il modale anagrafico
+            document.getElementById("anagrafica-modal").classList.remove("hidden");
+            document.getElementById("anagrafica-modal").classList.add("show"); // Mostra il modale anagrafico
         }
 
         function notReady() {
-        alert("Va bene! Torna quando ti sentirai pronto 💪");
+            alert("Va bene! Torna quando ti sentirai pronto 💪");
         }
 
         function handleAnagraficaSubmit(event) {
-        event.preventDefault();
-        // Salva tutti i dati del form anagrafico
-        userData.nome = document.getElementById('nome').value;
-        userData.cognome = document.getElementById('cognome').value;
-        userData.professione = document.getElementById('professione').value;
-        userData.anniServizio = document.getElementById('anni-servizio').value;
-        userData.email = document.getElementById('email').value;
+            event.preventDefault();
+            // Salva tutti i dati del form anagrafico
+            userData.nome = document.getElementById('nome').value;
+            userData.cognome = document.getElementById('cognome').value;
+            userData.professione = document.getElementById('professione').value;
+            userData.anniServizio = document.getElementById('anni-servizio').value;
+            userData.email = document.getElementById('email').value;
 
-        document.getElementById("anagrafica-modal").classList.remove("show");
-        document.getElementById("anagrafica-modal").classList.add("hidden"); // Nasconde il modale anagrafico
+            document.getElementById("anagrafica-modal").classList.remove("show");
+            document.getElementById("anagrafica-modal").classList.add("hidden"); // Nasconde il modale anagrafico
 
-        document.getElementById("quiz-container").classList.remove("hidden");
-        document.getElementById("quiz-container").classList.add("show"); // Mostra il container del quiz
-        loadQuestion();
+            document.getElementById("quiz-container").classList.remove("hidden");
+            document.getElementById("quiz-container").classList.add("show"); // Mostra il container del quiz
+            loadQuestion();
         }
 
         document.getElementById("anagrafica-form").addEventListener("submit", handleAnagraficaSubmit);
 
         function loadQuestion() {
-        const q = questions[currentQuestion];
-        document.getElementById("question-title").innerHTML = `${q.title} <span id="info-icon" onclick="showInfo()">ℹ</span>`;
-        document.getElementById("info-box").classList.remove("show");
+            const q = questions[currentQuestion];
+            document.getElementById("question-title").innerHTML = `${q.title} <span id="info-icon" onclick="showInfo()">ℹ</span>`;
+            document.getElementById("info-box").classList.remove("show");
 
-        const container = document.getElementById("question-body");
-        container.innerHTML = '';
+            const container = document.getElementById("question-body");
+            container.innerHTML = '';
 
-        if (q.type === "checkbox") {
-        container.innerHTML = `
-        <div class="question-image-options-container">
-        <div id="image-container"><img src="${q.image}" /></div>
-        <form id="options-form">
-        ${q.options.map(opt => `<label><input type="checkbox" name="option" value="${opt}"> ${opt}</label><br>`).join('')}
-        </form>
-        </div>`;
-        } else if (q.type === "drag") {
-        container.innerHTML = `
-        <div class="drag-container">
-        <div class="question-area">
-        <img src="${q.image}" class="main-image" />
-        <div class="drop-zone" id="drop-zone" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
-        </div>
-        <div class="options">
-        <img src="Lama 4.png" draggable="true" ondragstart="drag(event)" id="lama1" />
-        <img src="lama 2.png" draggable="true" ondragstart="drag(event)" id="lama2" />
-        <img src="Lama 3.png" draggable="true" ondragstart="drag(event)" id="lama3" />
-        </div>
-        </div>`;
-        } else if (q.type === "drag2") {
-        container.innerHTML = `
-        <div class="drag-container">
-        <div class="question-area">
-        <img src="${q.image}" class="main-image" />
-        <div class="drop-zone" id="drop-zone" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
-        </div>
-        <div class="options">
-        <img src="Open.png" draggable="true" ondragstart="drag(event)" id="lama2" />
-        <img src="Label.png" draggable="true" ondragstart="drag(event)" id="lama1" />
-        </div>
-        </div>`;
-        } else if (q.type === "multiDrag") {
-        let imageHtml = `
-        <div class="image-container" id="image-multi" style="position: relative; display: inline-block;">
-        <img src="${q.image}" alt="Immagine" style="width: 50%;" />
-        `;
+            if (q.type === "checkbox") {
+                container.innerHTML = `
+            <div class="question-image-options-container">
+            <div id="image-container"><img src="${q.image}" /></div>
+            <form id="options-form">
+            ${q.options.map(opt => `<label><input type="checkbox" name="option" value="${opt}"> ${opt}</label><br>`).join('')}
+            </form>
+            </div>`;
+            } else if (q.type === "drag") {
+                container.innerHTML = `
+            <div class="drag-container">
+            <div class="question-area">
+            <img src="${q.image}" class="main-image" />
+            <div class="drop-zone" id="drop-zone" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+            </div>
+            <div class="options">
+            <img src="Lama 4.png" draggable="true" ondragstart="drag(event)" id="lama1" />
+            <img src="lama 2.png" draggable="true" ondragstart="drag(event)" id="lama2" />
+            <img src="Lama 3.png" draggable="true" ondragstart="drag(event)" id="lama3" />
+            </div>
+            </div>`;
+            } else if (q.type === "drag2") {
+                container.innerHTML = `
+            <div class="drag-container">
+            <div class="question-area">
+            <img src="${q.image}" class="main-image" />
+            <div class="drop-zone" id="drop-zone" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+            </div>
+            <div class="options">
+            <img src="Open.png" draggable="true" ondragstart="drag(event)" id="lama2" />
+            <img src="Label.png" draggable="true" ondragstart="drag(event)" id="lama1" />
+            </div>
+            </div>`;
+            } else if (q.type === "multiDrag") {
+                let imageHtml = `
+            <div class="image-container" id="image-multi" style="position: relative;  display: flex;  justify-content: center;  align-items: center;  margin: 0 auto;  max-width: 100%;">
+            <img src="${q.image}" alt="Immagine" style="width: 50%;" />
+            `;
 
-        q.dropZones.forEach(dz => {
-        imageHtml += `
-        <div class="drop-zone"
-        data-label="${dz.label}"
-        ondrop="dropLabel(event)"
-        ondragover="allowDrop(event)"
-        style="position: absolute;
-        top: ${dz.top}px;
-        left: ${dz.left}px;
-        width: 120px;
-        height: 40px;
-        border: 2px dashed #ccc;
-        text-align: center;
-        line-height: 40px;
-        background-color: #f9f9f9;">
-        ?
-        </div>`;
-        });
+                q.dropZones.forEach(dz => {
+                    imageHtml += `
+            <div class="drop-zone"
+            data-label="${dz.label}"
+            ondrop="dropLabel(event)"
+            ondragover="allowDrop(event)"
+            style="position: absolute;
+top: ${dz.top}px;
+left: ${dz.left}px;
+width: 130px;
+height: 40px;
+border: 2px dashed #6ba98f;
+text-align: center;
+line-height: 40px;
+background-color: #ffffffdd;
+color: #333;
+border-radius: 8px;
+font-weight: bold;
+box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+            ?
+            </div>`;
+                });
 
-        imageHtml += `</div>`; // chiude image-container
+                imageHtml += `</div>`; // chiude image-container
 
-        let labelsHtml = `<div class="label-list" style="margin-top: 20px;">`;
-        q.labels.forEach(label => {
-        labelsHtml += `
-        <div class="draggable-label"
-        draggable="true"
-        ondragstart="dragLabel(event)"
-        style="display: inline-block;
-        margin: 5px;
-        padding: 5px 10px;
-        background-color: #d9edf7;
-        border: 1px solid #bce8f1;
-        border-radius: 4px;
-        cursor: grab;">
-        ${label}
-        </div>`;
-        });
-        labelsHtml += `</div>`;
+                let labelsHtml = `<div class="label-list" style="margin-top: 20px;">`;
+                q.labels.forEach(label => {
+                    labelsHtml += `
+            <div class="draggable-label"
+            draggable="true"
+            ondragstart="dragLabel(event)"
+            style="display: inline-block;
+            margin: 5px;
+            padding: 5px 10px;
+            background-color: #d9edf7;
+            border: 1px solid #bce8f1;
+            border-radius: 4px;
+            cursor: grab;">
+            ${label}
+            </div>`;
+                });
+                labelsHtml += `</div>`;
 
-        container.innerHTML = imageHtml + labelsHtml;
+                container.innerHTML = imageHtml + labelsHtml;
 
-        } else if (q.type === "dragVideo") {
-        container.innerHTML = `
-        <div class="video-container">
-        <video id="myVideo" controls>
-        <source src="${q.videoSrc}" type="video/mp4" />
-        Il tuo browser non supporta il video.
-        </video>
-        <div id="dropZone" class="drop-zone-video" ondrop="handleVideoDrop(event, '${q.correctId}')" ondragover="allowDrop(event)"></div>
-        </div>
-        <div class="options video-options">
-        ${q.options.map(opt => `<img src="${opt.src}" id="${opt.id}" draggable="true" ondragstart="drag(event)" />`).join('')}
-        </div>`;
+            } else if (q.type === "dragVideo") {
+                container.innerHTML = `
+            <div class="video-container">
+            <video id="myVideo" controls>
+            <source src="${q.videoSrc}" type="video/mp4" />
+            Il tuo browser non supporta il video.
+            </video>
+            <div id="dropZone" class="drop-zone-video" ondrop="handleVideoDrop(event, '${q.correctId}')" ondragover="allowDrop(event)"></div>
+            </div>
+            <div class="options video-options">
+            ${q.options.map(opt => `<img src="${opt.src}" id="${opt.id}" draggable="true" ondragstart="drag(event)" />`).join('')}
+            </div>`;
 
-        const video = document.getElementById("myVideo");
-        const dropZone = document.getElementById("dropZone");
-        let stopped = false;
+                const video = document.getElementById("myVideo");
+                const dropZone = document.getElementById("dropZone");
+                let stopped = false;
 
-        video.addEventListener("timeupdate", () => {
-        if (video.currentTime >= q.pauseTime && !video.paused && !stopped) {
-        video.pause();
-        dropZone.style.display = "block";
-        stopped = true;
-        }
-        });
-        }
+                video.addEventListener("timeupdate", () => {
+                    if (video.currentTime >= q.pauseTime && !video.paused && !stopped) {
+                        video.pause();
+                        dropZone.style.display = "block";
+                        stopped = true;
+                    }
+                });
+            }
 
-        startTimer();
+            startTimer();
         }
 
 
         function showInfo() {
-        const q = questions[currentQuestion];
-        const infoBox = document.getElementById("info-box");
-        infoBox.textContent = q.type === "checkbox"
-        ? "Seleziona una o più risposte corrette e clicca su 'Conferma'."
-        : "Trascina la lama corretta sul manico per assemblare lo strumento.";
-        infoBox.classList.add("show");
+            const q = questions[currentQuestion];
+            const infoBox = document.getElementById("info-box");
+            infoBox.textContent = q.type === "checkbox"
+                ? "Seleziona una o più risposte corrette e clicca su 'Conferma'."
+                : "Trascina la lama corretta sul manico per assemblare lo strumento.";
+            infoBox.classList.add("show");
         }
         function submitAnswer(fromTimeout = false) {
-        clearInterval(timer);
-        const q = questions[currentQuestion];
-        let isCorrect = false;
-        let userAnswer = 'N/A';
-        let correctAnswer = q.correctAnswers || q.correctId;
+            clearInterval(timer);
+            const q = questions[currentQuestion];
+            let isCorrect = false;
+            let userAnswer = 'N/A';
+            let correctAnswer = q.correctAnswers || q.correctId;
 
-        if (q.type === "checkbox") {
-        const selected = Array.from(document.querySelectorAll('input[name="option"]:checked')).map(el => el.value);
-        userAnswer = selected.join(', ');
-        const correct = q.correctAnswers;
-        if (JSON.stringify(selected.sort()) === JSON.stringify(correct.sort())) {
-        score += 10;
-        document.getElementById("score").textContent = score;
-        showModal("🎉 Bravo! Risposta corretta!");
-        isCorrect = true;
-        } else {
-        showModal(fromTimeout ? "⏰ Tempo scaduto!" : "❌ Risposta sbagliata.");
-        }
-        } else if (q.type === "drag" || q.type === "drag2") {
-        const dropped = document.querySelector("#drop-zone img");
-        if (dropped) {
-        userAnswer = dropped.id;
-        }
-        if (dropped && dropped.id === q.correctId) {
-        score += 10;
-        document.getElementById("score").textContent = score;
-        showModal("✅ Corretto!");
-        isCorrect = true;
-        } else {
-        showModal(fromTimeout ? "⏰ Tempo scaduto!" : "❌ Oggetto errato.");
-        }
-        } else if (q.type === "dragVideo") {
-        showModal(fromTimeout ? "⏰ Tempo scaduto!" : "❌ Risposta non fornita.");
-        isCorrect = false;
-        userAnswer = 'Tempo scaduto / Non risposto';
-        questionResults.push({
-        questionTitle: q.title.split('<br>')[0],
-        correct: isCorrect,
-        userAnswer: userAnswer,
-        correctAnswer: correctAnswer
-        });
-        setTimeout(() => {
-        nextQuestion();
-        }, 1000);
-        return;
-        } else if (q.type === "multiDrag") {
-        const dropZones = document.querySelectorAll(".drop-zone");
-        const userMatches = {};
+            if (q.type === "checkbox") {
+                const selected = Array.from(document.querySelectorAll('input[name="option"]:checked')).map(el => el.value);
+                userAnswer = selected.join(', ');
+                const correct = q.correctAnswers;
+                if (JSON.stringify(selected.sort()) === JSON.stringify(correct.sort())) {
+                    score += 10;
+                    document.getElementById("score").textContent = score;
+                    showModal("🎉 Bravo! Risposta corretta!");
+                    isCorrect = true;
+                } else {
+                    showModal(fromTimeout ? "⏰ Tempo scaduto!" : "❌ Risposta sbagliata.");
+                }
+            } else if (q.type === "drag" || q.type === "drag2") {
+                const dropped = document.querySelector("#drop-zone img");
+                if (dropped) {
+                    userAnswer = dropped.id;
+                }
+                if (dropped && dropped.id === q.correctId) {
+                    score += 10;
+                    document.getElementById("score").textContent = score;
+                    showModal("✅ Corretto!");
+                    isCorrect = true;
+                } else {
+                    showModal(fromTimeout ? "⏰ Tempo scaduto!" : "❌ Oggetto errato.");
+                }
+            } else if (q.type === "dragVideo") {
+                showModal(fromTimeout ? "⏰ Tempo scaduto!" : "❌ Risposta non fornita.");
+                isCorrect = false;
+                userAnswer = 'Tempo scaduto / Non risposto';
+                questionResults.push({
+                    questionTitle: q.title.split('<br>')[0],
+                    correct: isCorrect,
+                    userAnswer: userAnswer,
+                    correctAnswer: correctAnswer
+                });
+                setTimeout(() => {
+                    nextQuestion();
+                }, 1000);
+                return;
+            } else if (q.type === "multiDrag") {
+                const dropZones = document.querySelectorAll(".drop-zone");
+                const userMatches = {};
 
-        dropZones.forEach(zone => {
-        const zona = zone.dataset.label;
-        const contenuto = zone.textContent.trim();
-        if (contenuto && contenuto !== "?") {
-        userMatches[contenuto] = zona;
-        }
-        });
+                dropZones.forEach(zone => {
+                    const zona = zone.dataset.label;
+                    const contenuto = zone.textContent.trim();
+                    if (contenuto && contenuto !== "?") {
+                        userMatches[contenuto] = zona;
+                    }
+                });
 
-        const correctMatches = q.correctMatches;
-        let total = Object.keys(correctMatches).length;
-        let correctCount = 0;
+                const correctMatches = q.correctMatches;
+                let total = Object.keys(correctMatches).length;
+                let correctCount = 0;
 
-        for (const [label, expectedZone] of Object.entries(correctMatches)) {
-        if (userMatches[label] === expectedZone) {
-        correctCount++;
-        }
-        }
+                for (const [label, expectedZone] of Object.entries(correctMatches)) {
+                    if (userMatches[label] === expectedZone) {
+                        correctCount++;
+                    }
+                }
 
-        userAnswer = Object.entries(userMatches).map(([a, b]) => `${a}→${b}`).join("; ");
-        correctAnswer = Object.entries(correctMatches).map(([a, b]) => `${a}→${b}`).join("; ");
-        isCorrect = correctCount === total;
+                userAnswer = Object.entries(userMatches).map(([a, b]) => `${a}→${b}`).join("; ");
+                correctAnswer = Object.entries(correctMatches).map(([a, b]) => `${a}→${b}`).join("; ");
+                isCorrect = correctCount === total;
 
-        if (isCorrect) {
-        score += 10;
-        document.getElementById("score").textContent = score;
-        showModal("✅ Posizionamento corretto!");
-        } else {
-        showModal(fromTimeout ? "⏰ Tempo scaduto!" : "❌ Posizionamento errato.");
-        }
-        }
+                if (isCorrect) {
+                    score += 10;
+                    document.getElementById("score").textContent = score;
+                    showModal("✅ Posizionamento corretto!");
+                } else {
+                    showModal(fromTimeout ? "⏰ Tempo scaduto!" : "❌ Posizionamento errato.");
+                }
+            }
 
-        // Salva il risultato e passa alla prossima domanda
-        questionResults.push({
-        questionTitle: q.title.split('<br>')[0],
-        correct: isCorrect,
-        userAnswer: userAnswer,
-        correctAnswer: correctAnswer
-        });
+            // Salva il risultato e passa alla prossima domanda
+            questionResults.push({
+                questionTitle: q.title.split('<br>')[0],
+                correct: isCorrect,
+                userAnswer: userAnswer,
+                correctAnswer: correctAnswer
+            });
 
-        setTimeout(() => {
-        nextQuestion();
-        }, 1000);
+            setTimeout(() => {
+                nextQuestion();
+            }, 1000);
         }
 
         function showModal(message) {
-        document.getElementById("modal-content").querySelector("p").textContent = message;
-        document.getElementById("modal").classList.remove("hidden");
+            document.getElementById("modal-content").querySelector("p").textContent = message;
+            document.getElementById("modal").classList.remove("hidden");
         }
 
         function nextQuestion() {
-        document.getElementById("modal").classList.add("hidden");
-        currentQuestion++;
-        if (currentQuestion < questions.length) {
-        loadQuestion();
-        } else {
-        document.getElementById("quiz-container").classList.replace("show", "hidden");
-        document.getElementById("results-container").classList.replace("hidden", "show");
+            document.getElementById("modal").classList.add("hidden");
+            currentQuestion++;
+            if (currentQuestion < questions.length) {
+                loadQuestion();
+            } else {
+                document.getElementById("quiz-container").classList.replace("show", "hidden");
+                document.getElementById("results-container").classList.replace("hidden", "show");
 
-        // Nascondi il footer
-        document.querySelector("footer").classList.add("hidden");
+                // Nascondi il footer
+                document.querySelector("footer").classList.add("hidden");
 
-        renderRadarChart();
-        }
+                renderRadarChart();
+            }
         }
 
         function startTimer() {
-        timeLeft = 120;
-        document.getElementById("timer").textContent = timeLeft;
-        timer = setInterval(() => {
-        timeLeft--;
-        document.getElementById("timer").textContent = timeLeft;
-        if (timeLeft <= 0) {
-        submitAnswer(true);
-        }
-        }, 1000);
+            timeLeft = 120000;
+            document.getElementById("timer").textContent = timeLeft;
+            timer = setInterval(() => {
+                timeLeft--;
+                document.getElementById("timer").textContent = timeLeft;
+                if (timeLeft <= 0) {
+                    submitAnswer(true);
+                }
+            }, 1000);
         }
 
         // Permette il drop
         function allowDrop(ev) {
-        ev.preventDefault();
+            ev.preventDefault();
         }
 
         // Inizio drag, salvo id (o label) da trasferire
         function drag(ev) {
-        ev.dataTransfer.setData("text", ev.target.id);
+            ev.dataTransfer.setData("text", ev.target.id);
         }
 
         // Drop per immagini (tipo drag e drag2)
         function drop(ev) {
-        ev.preventDefault();
-        const data = ev.dataTransfer.getData("text");
-        const draggedElement = document.getElementById(data);
-        if (ev.target.classList.contains('drop-zone')) {
-        ev.target.appendChild(draggedElement);
-        draggedElement.style.position = "relative"; // Per sicurezza
-        }
+            ev.preventDefault();
+            const data = ev.dataTransfer.getData("text");
+            const draggedElement = document.getElementById(data);
+            if (ev.target.classList.contains('drop-zone')) {
+                ev.target.appendChild(draggedElement);
+                draggedElement.style.position = "relative"; // Per sicurezza
+            }
         }
 
         // Drag per etichette testuali (multiDrag)
         function dragLabel(ev) {
-        ev.dataTransfer.setData("text", ev.target.textContent.trim());
+            ev.dataTransfer.setData("text", ev.target.textContent.trim());
         }
         // Drop per etichette multiDrag
         function dropLabel(ev) {
-        ev.preventDefault();
-        const label = ev.dataTransfer.getData("text");
-        if (ev.target.dataset.label === label) {
-        ev.target.innerHTML = label;
-        ev.target.style.backgroundColor = "lightgreen";
-        } else {
-        alert("Label errata per questa zona!");
-        }
+            ev.preventDefault();
+            const label = ev.dataTransfer.getData("text");
+            if (ev.target.dataset.label === label) {
+                ev.target.innerHTML = label;
+                ev.target.style.backgroundColor = "lightgreen";
+            } else {
+                alert("Label errata per questa zona!");
+            }
         }
 
 
         function renderRadarChart() {
-        const ctx = document.getElementById('radar-chart').getContext('2d');
-        const totalQuestions = questions.length;
-        const correctAnswers = score / 10;
-        const wrongAnswers = totalQuestions - correctAnswers;
-        const percentage = (score / (totalQuestions * 10)) * 100;
+            const ctx = document.getElementById('radar-chart').getContext('2d');
+            const totalQuestions = questions.length;
+            const correctAnswers = score / 10;
+            const wrongAnswers = totalQuestions - correctAnswers;
+            const percentage = (score / (totalQuestions * 10)) * 100;
 
-        let skillLevel = '';
-        if (percentage >= 85) skillLevel = 'Autonomo e Formatore';
-        else if (percentage >= 60) skillLevel = 'Autonomo';
-        else skillLevel = 'Principiante';
+            let skillLevel = '';
+            if (percentage >= 85) skillLevel = 'Autonomo e Formatore';
+            else if (percentage >= 60) skillLevel = 'Autonomo';
+            else skillLevel = 'Principiante';
 
-        // Dati anagrafici
-        document.getElementById('datiAnagraficiDiv').innerHTML = `
-        <h3>Dati Anagrafici Inseriti:</h3>
-        <p><strong>Nome:</strong> ${userData.nome || 'N/A'}</p>
-        <p><strong>Cognome:</strong> ${userData.cognome || 'N/A'}</p>
-        <p><strong>Professione:</strong> ${userData.professione || 'N/A'}</p>
-        <p><strong>Anni di Servizio:</strong> ${userData.anniServizio || 'N/A'}</p>
-        <p><strong>Email:</strong> ${userData.email || 'N/A'}</p>
-        `;
+            // Dati anagrafici
+            document.getElementById('datiAnagraficiDiv').innerHTML = `
+            <h3>Dati Anagrafici Inseriti:</h3>
+            <p><strong>Nome:</strong> ${userData.nome || 'N/A'}</p>
+            <p><strong>Cognome:</strong> ${userData.cognome || 'N/A'}</p>
+            <p><strong>Professione:</strong> ${userData.professione || 'N/A'}</p>
+            <p><strong>Anni di Servizio:</strong> ${userData.anniServizio || 'N/A'}</p>
+            <p><strong>Email:</strong> ${userData.email || 'N/A'}</p>
+            `;
 
-        // Riepilogo sintetico
-        document.getElementById('riepilogoUtenteQuiz').innerHTML = `
-        <p>Il/La Sig. <strong>${userData.nome || ''} ${userData.cognome || ''}</strong>,
-        con <strong>${userData.anniServizio || 'N/A'}</strong> anni di servizio,
-        ha risposto correttamente a <strong>${correctAnswers} domande su ${totalQuestions}</strong>.</p>
-        <hr>
-        `;
+            // Riepilogo sintetico
+            document.getElementById('riepilogoUtenteQuiz').innerHTML = `
+            <p>Il/La Sig. <strong>${userData.nome || ''} ${userData.cognome || ''}</strong>,
+            con <strong>${userData.anniServizio || 'N/A'}</strong> anni di servizio,
+            ha risposto correttamente a <strong>${correctAnswers} domande su ${totalQuestions}</strong>.</p>
+            <hr>
+            `;
 
-        // Riepilogo dettagliato
-        const detailedResultsHtml = `
-        <h3>Riepilogo Quiz:</h3>
-        <p><strong>Risposte corrette:</strong> ${correctAnswers} / ${totalQuestions}</p>
-        <p><strong>Risposte sbagliate:</strong> ${wrongAnswers}</p>
-        <p><strong>Punteggio totale:</strong> ${score} / ${totalQuestions * 10}</p>
-        <p><strong>Livello competenze:</strong> ${skillLevel}</p>
-        <hr>
-        <h3>Dettaglio Risposte:</h3>
-        <ul>
-        ${questionResults.map((res, i) => `
-        <li><strong>Domanda ${i + 1}:</strong> ${res.questionTitle} –
-        ${res.correct ? '<span style="color:green;">Corretta</span>' : '<span style="color:red;">Sbagliata</span>'}
-        ${res.userAnswer ? `(Tua risposta: ${res.userAnswer})` : ''}
-        ${!res.correct && res.correctAnswer ? `(Corretta: ${Array.isArray(res.correctAnswer) ? res.correctAnswer.join(', ') : res.correctAnswer})` : ''}
-        </li>
-        `).join('')}
-        </ul>
-        `;
-        document.getElementById('results-details').innerHTML = detailedResultsHtml;
+            // Riepilogo dettagliato
+            const detailedResultsHtml = `
+            <h3>Riepilogo Quiz:</h3>
+            <p><strong>Risposte corrette:</strong> ${correctAnswers} / ${totalQuestions}</p>
+            <p><strong>Risposte sbagliate:</strong> ${wrongAnswers}</p>
+            <p><strong>Punteggio totale:</strong> ${score} / ${totalQuestions * 10}</p>
+            <p><strong>Livello competenze:</strong> ${skillLevel}</p>
+            <hr>
+            <h3>Dettaglio Risposte:</h3>
+            <ul>
+            ${questionResults.map((res, i) => `
+            <li><strong>Domanda ${i + 1}:</strong> ${res.questionTitle} –
+            ${res.correct ? '<span style="color:green;">Corretta</span>' : '<span style="color:red;">Sbagliata</span>'}
+            ${res.userAnswer ? `(Tua risposta: ${res.userAnswer})` : ''}
+            ${!res.correct && res.correctAnswer ? `(Corretta: ${Array.isArray(res.correctAnswer) ? res.correctAnswer.join(', ') : res.correctAnswer})` : ''}
+            </li>
+            `).join('')}
+            </ul>
+            `;
+            document.getElementById('results-details').innerHTML = detailedResultsHtml;
 
-        // Radar chart finale
-        new Chart(ctx, {
-        type: 'radar',
-        data: {
-        labels: ['Correttezza (%)', 'Velocità (punti/sec)', 'Conoscenza complessiva', 'Precisione', 'Risposte Corrette', 'Risposte Sbagliate'],
-        datasets: [{
-        label: 'Prestazioni',
-        data: [
-        percentage,
-        score / (30 * totalQuestions),
-        percentage,
-        (correctAnswers / totalQuestions) * 100,
-        correctAnswers,
-        wrongAnswers
-        ],
-        backgroundColor: 'rgba(54, 162, 235, 0.2)',
-        borderColor: 'rgba(54, 162, 235, 1)',
-        borderWidth: 2
-        }]
-        },
-        options: {
-        plugins: {
-        legend: { labels: { font: { size: 14 } } },
-        title: { display: true, text: 'Radar delle Competenze', font: { size: 18 } }
-        },
-        scales: {
-        r: {
-        suggestedMin: 0,
-        suggestedMax: 100,
-        pointLabels: { font: { size: 12 } },
-        ticks: { beginAtZero: true }
-        }
-        }
-        }
-        });
+            // Radar chart finale
+            new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['Correttezza (%)', 'Velocità (punti/sec)', 'Conoscenza complessiva', 'Precisione', 'Risposte Corrette', 'Risposte Sbagliate'],
+                    datasets: [{
+                        label: 'Prestazioni',
+                        data: [
+                            percentage,
+                            score / (30 * totalQuestions),
+                            percentage,
+                            (correctAnswers / totalQuestions) * 100,
+                            correctAnswers,
+                            wrongAnswers
+                        ],
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    plugins: {
+                        legend: { labels: { font: { size: 14 } } },
+                        title: { display: true, text: 'Radar delle Competenze', font: { size: 18 } }
+                    },
+                    scales: {
+                        r: {
+                            suggestedMin: 0,
+                            suggestedMax: 100,
+                            pointLabels: { font: { size: 12 } },
+                            ticks: { beginAtZero: true }
+                        }
+                    }
+                }
+            });
         }
         function finishQuiz() {
-        quizContainer.style.display = 'none';
-        resultsContainer.style.display = 'block';
+            quizContainer.style.display = 'none';
+            resultsContainer.style.display = 'block';
 
-        const correctAnswersCount = questionResults.filter(r => r.correct).length;
-        const totalQuestionsCount = questions.length;
+            const correctAnswersCount = questionResults.filter(r => r.correct).length;
+            const totalQuestionsCount = questions.length;
 
-        datiAnagraficiDiv.innerHTML = `
-        <h3>Dati Anagrafici Inseriti:</h3>
-        <p><strong>Nome:</strong> ${userData.nome || 'N/A'}</p>
-        <p><strong>Cognome:</strong> ${userData.cognome || 'N/A'}</p>
-        <p><strong>Professione:</strong> ${userData.professione || 'N/A'}</p>
-        <p><strong>Anni di Servizio:</strong> ${userData.anniServizio || 'N/A'}</p>
-        <p><strong>Email:</strong> ${userData.email || 'N/A'}</p>
-        <hr>
-        <p>Il/La Sig. <strong>${userData.nome || ''} ${userData.cognome || ''}</strong>
-        ha risposto correttamente a <strong>${correctAnswersCount} domande su ${totalQuestionsCount}</strong>.</p>
-        <p>Punteggio totale: <strong>${score} / ${questions.length * 10}</strong></p>
-        `;
+            datiAnagraficiDiv.innerHTML = `
+            <h3>Dati Anagrafici Inseriti:</h3>
+            <p><strong>Nome:</strong> ${userData.nome || 'N/A'}</p>
+            <p><strong>Cognome:</strong> ${userData.cognome || 'N/A'}</p>
+            <p><strong>Professione:</strong> ${userData.professione || 'N/A'}</p>
+            <p><strong>Anni di Servizio:</strong> ${userData.anniServizio || 'N/A'}</p>
+            <p><strong>Email:</strong> ${userData.email || 'N/A'}</p>
+            <hr>
+            <p>Il/La Sig. <strong>${userData.nome || ''} ${userData.cognome || ''}</strong>
+            ha risposto correttamente a <strong>${correctAnswersCount} domande su ${totalQuestionsCount}</strong>.</p>
+            <p>Punteggio totale: <strong>${score} / ${questions.length * 10}</strong></p>
+            `;
 
-        // Radar 1: correttezza per domanda
-        const radarData = questionResults.map(q => q.correct ? 100 : 0);
-        const ctx = document.getElementById('radar-chart').getContext('2d');
-        if (window.radarChart) window.radarChart.destroy();
+            // Radar 1: correttezza per domanda
+            const radarData = questionResults.map(q => q.correct ? 100 : 0);
+            const ctx = document.getElementById('radar-chart').getContext('2d');
+            if (window.radarChart) window.radarChart.destroy();
 
-        window.radarChart = new Chart(ctx, {
-        type: 'radar',
-        data: {
-        labels: questions.map((_, i) => `Domanda ${i + 1}`),
-        datasets: [{
-        label: 'Percentuale Risposte Corrette',
-        data: radarData,
-        fill: true,
-        backgroundColor: 'rgba(54, 162, 235, 0.2)',
-        borderColor: 'rgb(54, 162, 235)',
-        pointBackgroundColor: 'rgb(54, 162, 235)'
-        }]
-        },
-        options: {
-        scales: {
-        r: {
-        suggestedMin: 0,
-        suggestedMax: 100,
-        ticks: { stepSize: 20 }
-        }
-        }
-        }
-        });
+            window.radarChart = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: questions.map((_, i) => `Domanda ${i + 1}`),
+                    datasets: [{
+                        label: 'Percentuale Risposte Corrette',
+                        data: radarData,
+                        fill: true,
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        borderColor: 'rgb(54, 162, 235)',
+                        pointBackgroundColor: 'rgb(54, 162, 235)'
+                    }]
+                },
+                options: {
+                    scales: {
+                        r: {
+                            suggestedMin: 0,
+                            suggestedMax: 100,
+                            ticks: { stepSize: 20 }
+                        }
+                    }
+                }
+            });
 
-        // Salvataggio su Firebase (se configurato)
-        window.punteggioFinale = calcolaPunteggioFinale();
-        window.risposteUtente = ottieniRisposteUtente();
-        salvaRisposteQuiz();
+            // Salvataggio su Firebase (se configurato)
+            window.punteggioFinale = calcolaPunteggioFinale();
+            window.risposteUtente = ottieniRisposteUtente();
+            salvaRisposteQuiz();
         }
         function restartQuiz() {
-        currentQuestion = 0;
-        score = 0;
-        questionResults = [];
-        document.getElementById("score").textContent = score;
+            currentQuestion = 0;
+            score = 0;
+            questionResults = [];
+            document.getElementById("score").textContent = score;
 
-        document.getElementById("results-container").classList.replace("show", "hidden");
-        document.getElementById("intro-container").classList.replace("hidden", "show");
+            document.getElementById("results-container").classList.replace("show", "hidden");
+            document.getElementById("intro-container").classList.replace("hidden", "show");
         }
 
         function calcolaPunteggioFinale() {
-        const corrette = questionResults.filter(r => r.correct).length;
-        return Math.round((corrette / questions.length) * 100);
+            const corrette = questionResults.filter(r => r.correct).length;
+            return Math.round((corrette / questions.length) * 100);
         }
 
         function ottieniRisposteUtente() {
-        return questionResults.map((r, i) => ({
-        domanda: `Domanda ${i + 1}`,
-        corretta: r.correct
-        }));
+            return questionResults.map((r, i) => ({
+                domanda: `Domanda ${i + 1}`,
+                corretta: r.correct
+            }));
         }
         function handleVideoDrop(ev, correctId) {
-        ev.preventDefault();
-        const draggedId = ev.dataTransfer.getData("text");
-        const q = questions[currentQuestion];
-        let isCorrect = false;
+            ev.preventDefault();
+            const draggedId = ev.dataTransfer.getData("text");
+            const q = questions[currentQuestion];
+            let isCorrect = false;
 
-        if (draggedId === correctId) {
-        alert("✅ Strumento corretto!");
-        score += 10;
-        isCorrect = true;
-        } else {
-        alert("❌ Strumento sbagliato. Riprova.");
-        }
+            if (draggedId === correctId) {
+                alert("✅ Strumento corretto!");
+                score += 10;
+                isCorrect = true;
+            } else {
+                alert("❌ Strumento sbagliato. Riprova.");
+            }
 
-        document.getElementById("score").textContent = score;
+            document.getElementById("score").textContent = score;
 
-        questionResults.push({
-        questionTitle: q.title.split('<br>')[0],
-        correct: isCorrect,
-        userAnswer: draggedId,
-        correctAnswer: correctId
-        });
+            questionResults.push({
+                questionTitle: q.title.split('<br>')[0],
+                correct: isCorrect,
+                userAnswer: draggedId,
+                correctAnswer: correctId
+            });
 
-        document.getElementById("dropZone").style.display = "none";
-        document.getElementById("myVideo").play();
+            document.getElementById("dropZone").style.display = "none";
+            document.getElementById("myVideo").play();
 
-        setTimeout(() => nextQuestion(), 1000);
+            setTimeout(() => nextQuestion(), 1000);
         }
         function initDragDrop() {
-        $(".draggable-label").draggable({
-        revert: "invalid",
-        containment: "document"
-        });
+            $(".draggable-label").draggable({
+                revert: "invalid",
+                containment: "document"
+            });
 
-        $(".drop-zone").droppable({
-        accept: function (draggable) {
-        return $(draggable).data("label") === $(this).data("label");
-        },
-        drop: function (event, ui) {
-        const $drag = ui.draggable;
-        const $drop = $(this);
+            $(".drop-zone").droppable({
+                accept: function (draggable) {
+                    return $(draggable).data("label") === $(this).data("label");
+                },
+                drop: function (event, ui) {
+                    const $drag = ui.draggable;
+                    const $drop = $(this);
 
-        $drag.addClass("correct").draggable("disable").position({
-        of: $drop,
-        my: "center",
-        at: "center"
-        });
-        }
-        });
+                    $drag.addClass("correct").draggable("disable").position({
+                        of: $drop,
+                        my: "center",
+                        at: "center"
+                    });
+                }
+            });
 
-        $(".drop-zone").draggable({
-        containment: "parent",
-        stop: function (event, ui) {
-        const pos = ui.helper.position();
-        console.log(`Nuova posizione: top ${pos.top}px, left ${pos.left}px`);
-        }
-        });
+            $(".drop-zone").draggable({
+                containment: "parent",
+                stop: function (event, ui) {
+                    const pos = ui.helper.position();
+                    console.log(`Nuova posizione: top ${pos.top}px, left ${pos.left}px`);
+                }
+            });
         }
         function endQuiz() {
-  const datiDaInviare = {
-    ...userData,
-    punteggio: score,
-    risposte: questionResults,
-    timestamp: new Date().toISOString()
-  };
+            const datiDaInviare = {
+                ...userData,
+                punteggio: score,
+                risposte: questionResults,
+                timestamp: new Date().toISOString()
+            };
 
-  db.collection("risultatiQuiz").add(datiDaInviare)
-    .then(() => {
-      alert("✅ Risultati salvati con successo su Firebase!");
-      window.location.href = 'dati.html'; // se hai una pagina dati.html statica
-    })
-    .catch((error) => {
-      console.error("Errore salvataggio Firebase:", error);
-      alert("❌ Errore nel salvataggio dei risultati.");
-    });
-}
-    </Script>
+            db.collection("risultatiQuiz").add(datiDaInviare)
+                .then(() => {
+                    alert("✅ Risultati salvati con successo su Firebase!");
+
+                    // 👇 Salvataggio locale per dati.html
+                    let arrayEsistente = JSON.parse(localStorage.getItem("quizRisultatiArray")) || [];
+                    arrayEsistente.push(datiDaInviare);
+                    localStorage.setItem("quizRisultatiArray", JSON.stringify(arrayEsistente));
+
+                    // Vai a dati.html
+                    window.location.href = 'dati.html';
+                })
+                .catch((error) => {
+                    console.error("Errore salvataggio Firebase:", error);
+                    alert("❌ Errore nel salvataggio dei risultati.");
+                });
+        }
+</Script>
     <script>const userData = {
             nome: "Mario",
             cognome: "Rossi",
@@ -1581,26 +1564,26 @@
             correctAnswer: "Risposta Corretta"
         }));
         document.getElementById('datiAnagraficiDiv').innerHTML = `
-                    <p><strong>Nome:</strong> ${userData.nome}</p>
-                    <p><strong>Cognome:</strong> ${userData.cognome}</p>
-                    <p><strong>Professione:</strong> ${userData.professione}</p>
-                    <p><strong>Anni di Servizio:</strong> ${userData.anniServizio}</p>
-                    <p><strong>Email:</strong> ${userData.email}</p>
-                `;
+                        <p><strong>Nome:</strong> ${userData.nome}</p>
+                        <p><strong>Cognome:</strong> ${userData.cognome}</p>
+                        <p><strong>Professione:</strong> ${userData.professione}</p>
+                        <p><strong>Anni di Servizio:</strong> ${userData.anniServizio}</p>
+                        <p><strong>Email:</strong> ${userData.email}</p>
+                    `;
         document.getElementById('riepilogoUtenteQuiz').innerHTML = `
-                    <p>Hai risposto correttamente a <strong>${score / 10} domande su ${questions.length}</strong>.</p>
-                    <p>Punteggio totale: <strong>${score} / ${questions.length * 10}</strong></p>
-                `;
+                        <p>Hai risposto correttamente a <strong>${score / 10} domande su ${questions.length}</strong>.</p>
+                        <p>Punteggio totale: <strong>${score} / ${questions.length * 10}</strong></p>
+                    `;
         document.getElementById('results-details').innerHTML = `
-                    <ul>
-                        ${questionResults.map((res, i) => `
-                            <li><strong>Domanda ${i + 1}:</strong> ${res.questionTitle} –
-                            ${res.correct ? '<span style="color:green;">Corretta</span>' : '<span style="color:red;">Sbagliata</span>'}
-                            ${res.userAnswer ? `(Tua risposta: ${res.userAnswer})` : ''}
-                            ${!res.correct && res.correctAnswer ? `(Corretta: ${res.correctAnswer})` : ''}</li>
-                        `).join('')}
-                    </ul>
-                `;
+                        <ul>
+                            ${questionResults.map((res, i) => `
+                                <li><strong>Domanda ${i + 1}:</strong> ${res.questionTitle} –
+                                ${res.correct ? '<span style="color:green;">Corretta</span>' : '<span style="color:red;">Sbagliata</span>'}
+                                ${res.userAnswer ? `(Tua risposta: ${res.userAnswer})` : ''}
+                                ${!res.correct && res.correctAnswer ? `(Corretta: ${res.correctAnswer})` : ''}</li>
+                            `).join('')}
+                        </ul>
+                    `;
         new Chart(document.getElementById('radar-chart').getContext('2d'), {
             type: 'radar',
             data: {
@@ -1631,13 +1614,11 @@
         function restartQuiz() {
             alert("Funzione restart in sviluppo");
         }
-        </script>
+        function endQuiz() {
+            alert("Funzione salvataggio quiz in sviluppo");
+        }</script>
 </body>
-<footer>
-    <div align="center">
-        Legal Copyright @Master Strumentisti Sale Operatorie 2025
-    </div>
-</footer>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>function scaricaPNG() {
         html2canvas(document.body).then(canvas => {
